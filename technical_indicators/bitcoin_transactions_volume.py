@@ -20,16 +20,15 @@ def fetch_transactions(credentials) -> pd.DataFrame:
         WHERE 
           timestamp_month >= DATE_SUB(DATE_TRUNC(CURRENT_DATE(), MONTH), INTERVAL 3 MONTH)
         GROUP BY 
-          transaction_date
+          1
         ORDER BY 
-          transaction_date DESC
+          1
     """
     query_job = client.query(query)
     results = query_job.result()
     df_transactions_count = results.to_dataframe()
     df_transactions_count['date_'] = df_transactions_count['date_'].astype(str)
-
-    fetch_transactions.__doc__ = f"Bytes processed: {query_job.total_bytes_processed}"
+    
     return df_transactions_count
 
 def schema() -> list[dict]:
@@ -42,10 +41,10 @@ def schema() -> list[dict]:
     ]
     return table_schema
 
-def run_etl(credentials,dataset:str) -> None:
+def run_etl(credentials,dataset:str) -> int:
     table = fetch_transactions(credentials)
     table_schema = schema()
-    target_table = dataset+destination_table
+    target_table = dataset + destination_table
     
     pandas_gbq.to_gbq(
         dataframe=table,
@@ -56,7 +55,6 @@ def run_etl(credentials,dataset:str) -> None:
         if_exists="replace" 
     )
 
-    run_etl.__doc__ = f"fetching data from {fetch_transactions.__name__}, added {len(table)} rows."
 
 if __name__ == '__main__':
     main()
