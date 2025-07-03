@@ -6,6 +6,7 @@ import requests
 import pandas_gbq
 from google.cloud import bigquery
 from typing import Any
+import time
 
 
 logging.basicConfig(
@@ -24,15 +25,18 @@ from technical_indicators import (
     )
 
 def main() -> None:
-    credentials = service_account.Credentials.from_service_account_file("connection-123-892e002c2def.json")
-
-    jobs = [
-        bitcoin_transactions_volume,
-        
-    ]
     
+    credentials = service_account.Credentials.from_service_account_file("connection-123-892e002c2def.json")
+    
+    jobs = [
+        bitcoin_transactions_volume,  
+    ]
+
     for job in jobs:
-        job.run_etl(credentials,dataset)
-        
+        job_name = job.__name__.title()
+        logger.info(f"Starting ETL job: {job_name}")
+    
+        stats = job.run_etl(credentials, dataset)
+
 if __name__ == "__main__":
     main()

@@ -55,6 +55,7 @@ def run_etl(credentials,dataset:str) -> int:
         if_exists="replace" 
     )
 
+    return (len(table), )
 
 if __name__ == '__main__':
     main()
