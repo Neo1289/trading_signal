@@ -2,7 +2,6 @@ import pandas as pd
 import pandas_gbq
 from google.cloud import bigquery
 from typing import Any
-import logging
 from google.oauth2 import service_account
 
 destination_table = "bitcoin_transactions"
@@ -41,7 +40,7 @@ def schema() -> list[dict]:
     ]
     return table_schema
 
-def run_etl(credentials,dataset:str) -> int:
+def run_etl(credentials,dataset:str) -> None:
     table = fetch_transactions(credentials)
     table_schema = schema()
     target_table = dataset + destination_table
@@ -55,7 +54,3 @@ def run_etl(credentials,dataset:str) -> int:
         if_exists="replace" 
     )
 
-    return (len(table), )
-
-if __name__ == '__main__':
-    main()
