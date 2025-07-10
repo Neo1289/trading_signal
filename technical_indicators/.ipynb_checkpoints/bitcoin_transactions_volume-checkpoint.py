@@ -3,8 +3,11 @@ import pandas_gbq
 from google.cloud import bigquery
 from typing import Any
 from google.oauth2 import service_account
+import logging
 
 destination_table = "bitcoin_transactions"
+
+logger = logging.getLogger(__name__)
 
 def fetch_transactions(credentials) -> pd.DataFrame:
    
@@ -27,6 +30,9 @@ def fetch_transactions(credentials) -> pd.DataFrame:
     results = query_job.result()
     df_transactions_count = results.to_dataframe()
     df_transactions_count['date_'] = df_transactions_count['date_'].astype(str)
+
+    bytes_processed = query_job.total_bytes_processed
+    logger.info(f"Query processed {bytes_processed:,} bytes ({bytes_processed / 1024 / 1024:.2f} MB)")
     
     return df_transactions_count
 
