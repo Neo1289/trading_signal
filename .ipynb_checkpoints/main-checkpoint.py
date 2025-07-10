@@ -36,7 +36,7 @@ def main() -> None:
         job_name = job.__name__.title()
         logger.info(f"Starting ETL job: {job_name}")
     
-        stats = job.run_etl(credentials, dataset)
+        job.run_etl(credentials, dataset)
 
 if __name__ == "__main__":
     main()
