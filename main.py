@@ -21,7 +21,7 @@ dataset = "signals."
 
 from technical_indicators import ( 
     bitcoin_transactions_volume,
-   
+    bitcoin_closing_prices
     )
 
 def main() -> None:
@@ -29,7 +29,8 @@ def main() -> None:
     credentials = service_account.Credentials.from_service_account_file("connection-123-892e002c2def.json")
     
     jobs = [
-        bitcoin_transactions_volume,  
+        bitcoin_transactions_volume,
+        bitcoin_closing_prices
     ]
 
     for job in jobs:
