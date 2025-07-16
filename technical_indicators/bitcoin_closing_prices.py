@@ -26,6 +26,7 @@ def fetch_bitcoin_price() -> pd.DataFrame:
     # Keep only timestamp and closing price to match original structure
     df = df[['timestamp', 'close']].rename(columns={'close': 'price'})
     df = df.drop_duplicates(subset='timestamp', keep='first')
+    df = df.sort_values('timestamp').reset_index(drop=True)
     return df
 
 def schema() -> list[dict]:
