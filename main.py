@@ -22,7 +22,8 @@ dataset = "signals."
 from technical_indicators import ( 
     bitcoin_transactions_volume,
     bitcoin_closing_prices,
-    btc_moving_averages
+    btc_moving_averages,
+    bitcoin_ema
     )
 
 def main() -> None:
@@ -32,7 +33,8 @@ def main() -> None:
     jobs = [
         bitcoin_transactions_volume,
         bitcoin_closing_prices,
-        btc_moving_averages
+        btc_moving_averages,
+        bitcoin_ema
     ]
 
     for job in jobs:
@@ -43,3 +45,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    
