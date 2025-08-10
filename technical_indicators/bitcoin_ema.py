@@ -10,7 +10,7 @@ destination_table = "btc_ema"
 
 logger = logging.getLogger(__name__)
 
-def calculate_ema(credentials,periods=[12, 26, 20, 50, 200]) -> pd.DataFrame:
+def calculate_ema(credentials,periods=[9,12, 26, 20, 50, 200]) -> pd.DataFrame:
     client = bigquery.Client(credentials=credentials, project=credentials.project_id)
 
     query = """
@@ -46,6 +46,7 @@ def schema() -> list[dict]:
     table_schema = [
         {'name': 'timestamp', 'type': 'DATE', 'description': 'The date of the ema'},
         {'name': 'price', 'type': 'FLOAT64', 'description': 'Closing price for the given interval'},
+        {'name': 'ema_9', 'type': 'FLOAT64', 'description': 'exponential moving average 9 periods'},
         {'name': 'ema_12', 'type': 'FLOAT64', 'description': 'exponential moving average 12 periods'},
         {'name': 'ema_26', 'type': 'FLOAT64', 'description': 'exponential moving average 26 periods'},
         {'name': 'ema_20', 'type': 'FLOAT64', 'description': 'exponential moving average 20 periods'},

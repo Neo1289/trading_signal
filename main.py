@@ -23,7 +23,8 @@ from technical_indicators import (
     bitcoin_transactions_volume,
     bitcoin_closing_prices,
     btc_moving_averages,
-    bitcoin_ema
+    bitcoin_ema,
+    macd
     )
 
 def main() -> None:
@@ -34,7 +35,8 @@ def main() -> None:
         bitcoin_transactions_volume,
         bitcoin_closing_prices,
         btc_moving_averages,
-        bitcoin_ema
+        bitcoin_ema,
+        macd
     ]
 
     for job in jobs:
