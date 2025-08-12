@@ -1,7 +1,4 @@
 import pandas as pd
-# Add this import at the top
-from xgboost import XGBClassifier
-import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -70,8 +67,10 @@ class BitcoinPredictor:
         logger.info(f"Fetched {len(df)} rows of combined indicator data")
         return df
 
-    def create_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Create additional features and target variable"""
+    def create_features(self, df: pd.DataFrame, include_target: bool = True) -> pd.DataFrame:
+        """Create additional features and optionally the target variable.
+        When include_target=False, do not drop the last 3 days so that prediction uses the latest date.
+        """
 
         # Sort by date to ensure proper order
         df = df.sort_values('date_').reset_index(drop=True)
@@ -101,17 +100,27 @@ class BitcoinPredictor:
         # MACD momentum
         df['macd_momentum'] = df['macd_line'] - df['signal_line']
 
-        # Target: 1 if price goes up in next 3 days, 0 if down
-        df['future_price'] = df['price'].shift(-3)
-        df['target'] = (df['future_price'] > df['price']).astype(int)
-
-        # Remove rows with NaN values
-        df = df.dropna().reset_index(drop=True)
+        if include_target:
+            # Target: 1 if price goes up in next 3 days, 0 if down
+            df['future_price'] = df['price'].shift(-3)
+            df['target'] = (df['future_price'] > df['price']).astype(int)
+            # Remove rows with NaN values (includes last 3 rows without future_price)
+            df = df.dropna().reset_index(drop=True)
+        else:
+            # For inference, keep the latest rows; drop only rows that are unusable for features
+            feature_columns = [
+                'price_change_1d', 'price_change_3d', 'price_change_7d',
+                'volume_ratio', 'price_sma10_ratio', 'price_sma20_ratio',
+                'price_sma50_ratio', 'sma10_sma20_ratio', 'ema12_ema26_diff',
+                'price_ema20_ratio', 'bb_position', 'bb_width', 'percent_b',
+                'rsi_14', 'macd_momentum', 'histogram'
+            ]
+            df = df.dropna(subset=feature_columns).reset_index(drop=True)
 
         return df
 
     def prepare_features(self, df: pd.DataFrame) -> tuple:
-        """Select and prepare features for training"""
+        """Select and prepare features for training or inference. Returns (X, y, feature_columns); y is None if not present."""
 
         feature_columns = [
             'price_change_1d', 'price_change_3d', 'price_change_7d',
@@ -122,7 +131,7 @@ class BitcoinPredictor:
         ]
 
         X = df[feature_columns].copy()
-        y = df['target'].copy()
+        y = df['target'].copy() if 'target' in df.columns else None
 
         # Handle any remaining NaN values
         X = X.fillna(X.mean())
@@ -134,7 +143,7 @@ class BitcoinPredictor:
 
         # Fetch and prepare data
         df = self.fetch_all_indicators()
-        df = self.create_features(df)
+        df = self.create_features(df, include_target=True)
         X, y, feature_columns = self.prepare_features(df)
 
         # Split data
@@ -169,31 +178,33 @@ class BitcoinPredictor:
         return results
 
     def predict_direction(self) -> dict:
-        """Predict Bitcoin direction for next 3 days"""
+        """Predict Bitcoin direction for next 3 days using the latest available date."""
 
-        # Get latest data
-        df = self.fetch_all_indicators()
-        df = self.create_features(df)
+        # Get latest engineered features without target to avoid dropping the last 3 days
+        df_raw = self.fetch_all_indicators()
+        df_feat = self.create_features(df_raw, include_target=False)
+        X_all, _, feature_columns = self.prepare_features(df_feat)
 
-        # Get the most recent complete row
-        latest_data = df.iloc[-1:].copy()
-        X_latest, _, feature_columns = self.prepare_features(latest_data)
+        # Scale and predict for all rows, then take the latest
+        X_all_scaled = self.scaler.transform(X_all)
+        preds = self.model.predict(X_all_scaled)
+        probs = self.model.predict_proba(X_all_scaled)
 
-        # Scale and predict
-        X_latest_scaled = self.scaler.transform(X_latest)
-        prediction = self.model.predict(X_latest_scaled)[0]
-        probability = self.model.predict_proba(X_latest_scaled)[0]
+        latest_idx = X_all.index[-1]
+        prediction = preds[-1]
+        probability = probs[-1]
 
         direction = "UP" if prediction == 1 else "DOWN"
-        confidence = max(probability)
+        confidence = float(max(probability))
 
+        latest_row = df_feat.loc[latest_idx]
         return {
             'direction': direction,
             'confidence': confidence,
-            'probability_up': probability[1],
-            'probability_down': probability[0],
-            'current_price': latest_data['price'].iloc[0],
-            'date': latest_data['date_'].iloc[0]
+            'probability_up': float(probability[1]),
+            'probability_down': float(probability[0]),
+            'current_price': float(latest_row['price']),
+            'date': latest_row['date_']
         }
 
 def main():
