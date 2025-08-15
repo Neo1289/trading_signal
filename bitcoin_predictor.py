@@ -1,22 +1,25 @@
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score, classification_report
 from google.cloud import bigquery
 from google.oauth2 import service_account
 import logging
 import warnings
 warnings.filterwarnings('ignore')
 
+# Configure logging to write to logfile.txt
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('logfile.txt'),
+        logging.StreamHandler()  # Also keep console output
+    ]
+)
 logger = logging.getLogger(__name__)
 
 class BitcoinPredictor:
     def __init__(self, credentials_path: str):
         self.credentials = service_account.Credentials.from_service_account_file(credentials_path)
         self.client = bigquery.Client(credentials=self.credentials, project="connection-123")
-        self.model = RandomForestClassifier(n_estimators=100, random_state=42)
-        self.scaler = StandardScaler()
 
     def fetch_all_indicators(self) -> pd.DataFrame:
         """Fetch and combine all technical indicators from BigQuery"""
@@ -67,173 +70,195 @@ class BitcoinPredictor:
         logger.info(f"Fetched {len(df)} rows of combined indicator data")
         return df
 
-    def create_features(self, df: pd.DataFrame, include_target: bool = True) -> pd.DataFrame:
-        """Create additional features and optionally the target variable.
-        When include_target=False, do not drop the last 3 days so that prediction uses the latest date.
-        """
+    def analyze_individual_indicators(self) -> dict:
+        """Analyze each technical indicator individually and provide interpretations"""
 
-        # Sort by date to ensure proper order
-        df = df.sort_values('date_').reset_index(drop=True)
-
-        # Price momentum features
-        df['price_change_1d'] = df['price'].pct_change(1)
-        df['price_change_3d'] = df['price'].pct_change(3)
-        df['price_change_7d'] = df['price'].pct_change(7)
-
-        # Volume features
-        df['volume_ma_7'] = df['total_volume'].rolling(7).mean()
-        df['volume_ratio'] = df['total_volume'] / df['volume_ma_7']
-
-        # Moving average ratios
-        df['price_sma10_ratio'] = df['price'] / df['sma_10']
-        df['price_sma20_ratio'] = df['price'] / df['sma_20']
-        df['price_sma50_ratio'] = df['price'] / df['sma_50']
-        df['sma10_sma20_ratio'] = df['sma_10'] / df['sma_20']
-
-        # EMA features
-        df['ema12_ema26_diff'] = df['ema_12'] - df['ema_26']
-        df['price_ema20_ratio'] = df['price'] / df['ema_20']
-
-        # Bollinger Bands position
-        df['bb_position'] = (df['price'] - df['lower_band']) / (df['upper_band'] - df['lower_band'])
-
-        # MACD momentum
-        df['macd_momentum'] = df['macd_line'] - df['signal_line']
-
-        if include_target:
-            # Target: 1 if price goes up in next 3 days, 0 if down
-            df['future_price'] = df['price'].shift(-3)
-            df['target'] = (df['future_price'] > df['price']).astype(int)
-            # Remove rows with NaN values (includes last 3 rows without future_price)
-            df = df.dropna().reset_index(drop=True)
-        else:
-            # For inference, keep the latest rows; drop only rows that are unusable for features
-            feature_columns = [
-                'price_change_1d', 'price_change_3d', 'price_change_7d',
-                'volume_ratio', 'price_sma10_ratio', 'price_sma20_ratio',
-                'price_sma50_ratio', 'sma10_sma20_ratio', 'ema12_ema26_diff',
-                'price_ema20_ratio', 'bb_position', 'bb_width', 'percent_b',
-                'rsi_14', 'macd_momentum', 'histogram'
-            ]
-            df = df.dropna(subset=feature_columns).reset_index(drop=True)
-
-        return df
-
-    def prepare_features(self, df: pd.DataFrame) -> tuple:
-        """Select and prepare features for training or inference. Returns (X, y, feature_columns); y is None if not present."""
-
-        feature_columns = [
-            'price_change_1d', 'price_change_3d', 'price_change_7d',
-            'volume_ratio', 'price_sma10_ratio', 'price_sma20_ratio',
-            'price_sma50_ratio', 'sma10_sma20_ratio', 'ema12_ema26_diff',
-            'price_ema20_ratio', 'bb_position', 'bb_width', 'percent_b',
-            'rsi_14', 'macd_momentum', 'histogram'
-        ]
-
-        X = df[feature_columns].copy()
-        y = df['target'].copy() if 'target' in df.columns else None
-
-        # Handle any remaining NaN values
-        X = X.fillna(X.mean())
-
-        return X, y, feature_columns
-
-    def train_model(self) -> dict:
-        """Train the prediction model"""
-
-        # Fetch and prepare data
+        # Get the latest data
         df = self.fetch_all_indicators()
-        df = self.create_features(df, include_target=True)
-        X, y, feature_columns = self.prepare_features(df)
+        if df.empty:
+            return {"error": "No data available for analysis"}
 
-        # Split data
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42, stratify=y
-        )
+        # Get the most recent row
+        latest = df.iloc[-1]
+        current_price = latest['price']
 
-        # Scale features
-        X_train_scaled = self.scaler.fit_transform(X_train)
-        X_test_scaled = self.scaler.transform(X_test)
-
-        # Train model
-        self.model.fit(X_train_scaled, y_train)
-
-        # Evaluate
-        y_pred = self.model.predict(X_test_scaled)
-        accuracy = accuracy_score(y_test, y_pred)
-
-        # Feature importance
-        feature_importance = pd.DataFrame({
-            'feature': feature_columns,
-            'importance': self.model.feature_importances_
-        }).sort_values('importance', ascending=False)
-
-        results = {
-            'accuracy': accuracy,
-            'feature_importance': feature_importance,
-            'classification_report': classification_report(y_test, y_pred)
+        analysis = {
+            'date': latest['date_'],
+            'current_price': current_price,
+            'indicators': {},
+            'summary': ''
         }
 
-        logger.info(f"Model trained with accuracy: {accuracy:.4f}")
-        return results
+        # 1. Moving Averages Analysis
+        sma_signals = []
+        if current_price > latest['sma_10']:
+            sma_signals.append("BULLISH (above SMA-10)")
+        else:
+            sma_signals.append("BEARISH (below SMA-10)")
 
-    def predict_direction(self) -> dict:
-        """Predict Bitcoin direction for next 3 days using the latest available date."""
+        if current_price > latest['sma_20']:
+            sma_signals.append("BULLISH (above SMA-20)")
+        else:
+            sma_signals.append("BEARISH (below SMA-20)")
 
-        # Get latest engineered features without target to avoid dropping the last 3 days
-        df_raw = self.fetch_all_indicators()
-        df_feat = self.create_features(df_raw, include_target=False)
-        X_all, _, feature_columns = self.prepare_features(df_feat)
+        if current_price > latest['sma_50']:
+            sma_signals.append("BULLISH (above SMA-50)")
+        else:
+            sma_signals.append("BEARISH (below SMA-50)")
 
-        # Scale and predict for all rows, then take the latest
-        X_all_scaled = self.scaler.transform(X_all)
-        preds = self.model.predict(X_all_scaled)
-        probs = self.model.predict_proba(X_all_scaled)
-
-        latest_idx = X_all.index[-1]
-        prediction = preds[-1]
-        probability = probs[-1]
-
-        direction = "UP" if prediction == 1 else "DOWN"
-        confidence = float(max(probability))
-
-        latest_row = df_feat.loc[latest_idx]
-        return {
-            'direction': direction,
-            'confidence': confidence,
-            'probability_up': float(probability[1]),
-            'probability_down': float(probability[0]),
-            'current_price': float(latest_row['price']),
-            'date': latest_row['date_']
+        analysis['indicators']['Moving Averages'] = {
+            'interpretation': f"SMA-10: ${latest['sma_10']:,.2f}, SMA-20: ${latest['sma_20']:,.2f}, SMA-50: ${latest['sma_50']:,.2f}",
+            'signal': "; ".join(sma_signals)
         }
+
+        # 2. EMA Analysis
+        ema_signals = []
+        if current_price > latest['ema_20']:
+            ema_signals.append("BULLISH (above EMA-20)")
+        else:
+            ema_signals.append("BEARISH (below EMA-20)")
+
+        if latest['ema_12'] > latest['ema_26']:
+            ema_signals.append("BULLISH (EMA-12 > EMA-26)")
+        else:
+            ema_signals.append("BEARISH (EMA-12 < EMA-26)")
+
+        analysis['indicators']['Exponential Moving Averages'] = {
+            'interpretation': f"EMA-12: ${latest['ema_12']:,.2f}, EMA-26: ${latest['ema_26']:,.2f}, EMA-20: ${latest['ema_20']:,.2f}",
+            'signal': "; ".join(ema_signals)
+        }
+
+        # 3. RSI Analysis
+        rsi = latest['rsi_14']
+        if rsi > 70:
+            rsi_signal = "BEARISH (Overbought)"
+        elif rsi < 30:
+            rsi_signal = "BULLISH (Oversold)"
+        elif rsi > 50:
+            rsi_signal = "BULLISH (Above midline)"
+        else:
+            rsi_signal = "BEARISH (Below midline)"
+
+        analysis['indicators']['RSI'] = {
+            'interpretation': f"RSI-14: {rsi:.1f}",
+            'signal': rsi_signal
+        }
+
+        # 4. MACD Analysis
+        macd_line = latest['macd_line']
+        signal_line = latest['signal_line']
+        histogram = latest['histogram']
+
+        macd_signals = []
+        if macd_line > signal_line:
+            macd_signals.append("BULLISH (MACD above signal)")
+        else:
+            macd_signals.append("BEARISH (MACD below signal)")
+
+        if histogram > 0:
+            macd_signals.append("BULLISH (Positive histogram)")
+        else:
+            macd_signals.append("BEARISH (Negative histogram)")
+
+        analysis['indicators']['MACD'] = {
+            'interpretation': f"MACD: {macd_line:.2f}, Signal: {signal_line:.2f}, Histogram: {histogram:.2f}",
+            'signal': "; ".join(macd_signals)
+        }
+
+        # 5. Bollinger Bands Analysis
+        bb_position = latest['percent_b']
+        upper_band = latest['upper_band']
+        lower_band = latest['lower_band']
+
+        if bb_position > 0.8:
+            bb_signal = "BEARISH (Near upper band - overbought)"
+        elif bb_position < 0.2:
+            bb_signal = "BULLISH (Near lower band - oversold)"
+        elif bb_position > 0.5:
+            bb_signal = "BULLISH (Above middle band)"
+        else:
+            bb_signal = "BEARISH (Below middle band)"
+
+        analysis['indicators']['Bollinger Bands'] = {
+            'interpretation': f"Upper: ${upper_band:,.2f}, Lower: ${lower_band:,.2f}, Position: {bb_position:.2f}",
+            'signal': bb_signal
+        }
+
+        # 6. Volume Analysis
+        volume_ma_7 = df['total_volume'].tail(7).mean()
+        if latest['total_volume'] > volume_ma_7:
+            volume_signal = "BULLISH (Above average volume)"
+        else:
+            volume_signal = "BEARISH (Below average volume)"
+
+        analysis['indicators']['Volume'] = {
+            'interpretation': f"Current: {latest['total_volume']:,.0f}, 7-day avg: {volume_ma_7:,.0f}",
+            'signal': volume_signal
+        }
+
+        # Generate Summary
+        bullish_count = sum(1 for indicator in analysis['indicators'].values()
+                           if 'BULLISH' in indicator['signal'])
+        bearish_count = sum(1 for indicator in analysis['indicators'].values()
+                           if 'BEARISH' in indicator['signal'])
+
+        total_signals = bullish_count + bearish_count
+        bullish_percentage = (bullish_count / total_signals) * 100 if total_signals > 0 else 0
+
+        if bullish_percentage >= 70:
+            overall_sentiment = "STRONGLY BULLISH"
+        elif bullish_percentage >= 60:
+            overall_sentiment = "BULLISH"
+        elif bullish_percentage >= 40:
+            overall_sentiment = "NEUTRAL"
+        elif bullish_percentage >= 30:
+            overall_sentiment = "BEARISH"
+        else:
+            overall_sentiment = "STRONGLY BEARISH"
+
+        analysis['summary'] = (f"Technical analysis shows {bullish_count} bullish and {bearish_count} bearish signals "
+                              f"({bullish_percentage:.0f}% bullish). Overall sentiment: {overall_sentiment}")
+
+        # Log the analysis
+        logger.info(f"Technical Analysis - {analysis['summary']}")
+
+        return analysis
+
+    def generate_indicator_report(self) -> None:
+        """Generate and display a comprehensive technical indicator report"""
+
+        print("Analyzing Bitcoin Technical Indicators...")
+        print("=" * 80)
+
+        analysis = self.analyze_individual_indicators()
+
+        if 'error' in analysis:
+            print(f"Error: {analysis['error']}")
+            return
+
+        print(f"Bitcoin Technical Analysis Report")
+        print(f"Date: {analysis['date']}")
+        print(f"Current Price: ${analysis['current_price']:,.2f}")
+        print("=" * 80)
+
+        for indicator_name, indicator_data in analysis['indicators'].items():
+            print(f"\n{indicator_name.upper()}:")
+            print(f"  Values: {indicator_data['interpretation']}")
+            print(f"  Signal: {indicator_data['signal']}")
+
+        print("\n" + "=" * 80)
+        print(f"SUMMARY: {analysis['summary']}")
+        print("=" * 80)
 
 def main():
-    """Main function to run Bitcoin prediction"""
+    """Main function to run Bitcoin technical indicator analysis"""
 
     # Initialize predictor
     credentials_path = "connection-123-892e002c2def.json"
     predictor = BitcoinPredictor(credentials_path)
 
-    # Train model
-    print("Training Bitcoin direction prediction model...")
-    results = predictor.train_model()
-
-    print(f"\nModel Performance:")
-    print(f"Accuracy: {results['accuracy']:.4f}")
-    print(f"\nTop 5 Important Features:")
-    print(results['feature_importance'].head())
-
-    # Make prediction
-    print("\nPredicting Bitcoin direction for next 3 days...")
-    prediction = predictor.predict_direction()
-
-    print(f"\nPrediction Results:")
-    print(f"Current Price: ${prediction['current_price']:,.2f}")
-    print(f"Prediction Date: {prediction['date']}")
-    print(f"Direction (3 days): {prediction['direction']}")
-    print(f"Confidence: {prediction['confidence']:.4f}")
-    print(f"Probability UP: {prediction['probability_up']:.4f}")
-    print(f"Probability DOWN: {prediction['probability_down']:.4f}")
+    # Generate comprehensive technical indicator report
+    predictor.generate_indicator_report()
 
 if __name__ == "__main__":
     main()
