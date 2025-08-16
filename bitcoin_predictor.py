@@ -3,6 +3,7 @@ from google.cloud import bigquery
 from google.oauth2 import service_account
 import logging
 import warnings
+from datetime import datetime
 warnings.filterwarnings('ignore')
 
 # Configure logging to write to logfile.txt
@@ -234,8 +235,10 @@ class BitcoinPredictor:
 
         if 'error' in analysis:
             print(f"Error: {analysis['error']}")
+            logger.error(f"Failed to generate report: {analysis['error']}")
             return
 
+        # Display on console
         print(f"Bitcoin Technical Analysis Report")
         print(f"Date: {analysis['date']}")
         print(f"Current Price: ${analysis['current_price']:,.2f}")
@@ -249,6 +252,35 @@ class BitcoinPredictor:
         print("\n" + "=" * 80)
         print(f"SUMMARY: {analysis['summary']}")
         print("=" * 80)
+
+        # Save report to 'report analysis.txt' with double lines
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        with open("report analysis.txt", 'w') as f:
+            f.write("=" * 80 + "\n")
+            f.write("=" * 80 + "\n")
+            f.write(f"Bitcoin Technical Analysis Report\n")
+            f.write(f"Analysis Date: {current_datetime}\n")
+            f.write(f"Data Date: {analysis['date']}\n")
+            f.write(f"Last Closing Price: ${analysis['current_price']:,.2f}\n")
+            f.write("=" * 80 + "\n")
+
+            for indicator_name, indicator_data in analysis['indicators'].items():
+                f.write(f"\n{indicator_name.upper()}:\n")
+                f.write(f"  Values: {indicator_data['interpretation']}\n")
+                f.write(f"  Signal: {indicator_data['signal']}\n")
+
+            f.write("\n" + "=" * 80 + "\n")
+            f.write(f"SUMMARY: {analysis['summary']}\n")
+            f.write("=" * 80 + "\n")
+            f.write("=" * 80 + "\n")
+
+            # Ensure data is written to disk
+            f.flush()
+        # File is automatically closed here when exiting the 'with' block
+
+        print(f"\nReport saved to: report analysis.txt")
+        logger.info(f"Technical analysis report generated and saved to 'report analysis.txt'")
 
 def main():
     """Main function to run Bitcoin technical indicator analysis"""
