@@ -34,12 +34,18 @@ def fetch_bitcoin_price() -> pd.DataFrame:
     
     # Merge all data on timestamp
     df = df_prices.merge(df_market_caps, on='timestamp').merge(df_volumes, on='timestamp')
-    
-    # Convert timestamp to date
-    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms').dt.date
-    
-    # Sort by timestamp
-    df = df.sort_values('timestamp').reset_index(drop=True)
+
+    # Parse timestamps in UTC, normalize to midnight, then shift back one day
+    ts_utc = pd.to_datetime(df['timestamp'], unit='ms', utc=True)
+    dates_utc = ts_utc.dt.normalize() - pd.Timedelta(days=1)
+
+    # Use the shifted date as the label for the "closing" day
+    df['date'] = dates_utc.dt.date
+    df = df.drop(columns=['timestamp']).sort_values('date').reset_index(drop=True)
+
+    # Ensure one row per date (in case of any duplicates)
+    df = df.groupby('date', as_index=False).last()
+    df = df.rename(columns={'date': 'timestamp'})
 
     logger.info(f"imported {len(df)} rows of data from {url}")
     
