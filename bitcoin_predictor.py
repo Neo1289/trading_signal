@@ -68,6 +68,10 @@ class BitcoinPredictor:
         query_job = self.client.query(query)
         df = query_job.result().to_dataframe()
 
+        bytes_processed = query_job.total_bytes_processed
+
+        logger.info(f"Query processed {bytes_processed:,} bytes ({bytes_processed / 1024 / 1024:.2f} MB)")
+
         logger.info(f"Fetched {len(df)} rows of combined indicator data")
         return df
 
@@ -220,8 +224,6 @@ class BitcoinPredictor:
         analysis['summary'] = (f"Technical analysis shows {bullish_count} bullish and {bearish_count} bearish signals "
                               f"({bullish_percentage:.0f}% bullish). Overall sentiment: {overall_sentiment}")
 
-        # Log the analysis
-        logger.info(f"Technical Analysis - {analysis['summary']}")
 
         return analysis
 
