@@ -258,7 +258,7 @@ class BitcoinPredictor:
         # Save report to 'report analysis.txt' with double lines
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        with open("report analysis.txt", 'w') as f:
+        with open("reportanalysis.txt", 'w') as f:
             f.write("=" * 80 + "\n")
             f.write("=" * 80 + "\n")
             f.write(f"Bitcoin Technical Analysis Report\n")
