@@ -1,0 +1,64 @@
+name: Daily Trading Signals
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-trading-signals:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install uv
+      run: pip install uv
+      
+    - name: Install dependencies
+      run: uv sync
+      
+    - name: Create service account file
+      run: |
+        cat > connection-123-892e002c2def.json << 'EOF'
+        ${{ secrets.BIGQUERY_SERVICE_ACCOUNT_KEY }}
+        EOF
+        
+    - name: Set environment variables
+      run: |
+        echo "GOOGLE_APPLICATION_CREDENTIALS=connection-123-892e002c2def.json" >> $GITHUB_ENV
+        echo "GOOGLE_CLOUD_PROJECT=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
+        
+    - name: Run trading signals
+      run: uv run python main.py
+      
+    - name: Run bitcoin predictor
+      run: uv run python bitcoin_predictor.py
+      
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        git add logfile.txt reportanalysis.txt
+        
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          echo "Committing changes..."
+          git commit -m "Update trading signals and analysis - $(date)"
+          git push
+        fi
+      
+    - name: Clean up credentials
+      if: always()
+      run: rm -f connection-123-892e002c2def.json
