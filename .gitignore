@@ -12,6 +12,6 @@ wheels/
 # file types to ignore
 
 *.txt
-!report\ analysis.txt
+!reportanalysis.txt
 !logfile.txt
 *.json
