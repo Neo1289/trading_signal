@@ -1,99 +1,57 @@
-# Name of the GitHub Action workflow that appears in the Actions tab
 name: Daily Trading Signals
 
-# Define when this workflow should run
 on:
   schedule:
-    # Cron syntax: minute hour day month day-of-week (* means all)
-    # '0 9 * * *' = every day at 9:00 AM UTC (0 minutes, 9th hour)
-    - cron: '0 9 * * *'  # Runs every day at 9:00 AM UTC
-  # Allows you to manually trigger this workflow from GitHub's Actions tab
-  workflow_dispatch:  # Allows manual triggering
+    - cron: '0 9 * * *'
+  workflow_dispatch:
 
-# Define the jobs that make up this workflow
+permissions:
+  contents: write
+
 jobs:
-  # Job name (can be anything, shows up in the workflow run)
   run-trading-signals:
-    # Specify which GitHub-hosted runner to use (Ubuntu Linux latest version)
     runs-on: ubuntu-latest
     
-    # List of steps that make up this job (executed sequentially)
     steps:
-    # Download/checkout your repository code to the runner
     - name: Checkout code
-      # Use GitHub's pre-built action to checkout code (v4 is the version)
       uses: actions/checkout@v4
       
-    # Install Python on the runner
     - name: Set up Python
-      # Use GitHub's pre-built action to setup Python
       uses: actions/setup-python@v4
-      # Configuration for the Python setup action
       with:
-        # Specify which Python version to install
         python-version: '3.11'
         
-    # Install UV package manager (since you're using UV instead of pip)
     - name: Install uv
-      # Use pip to install UV (ironically, we use pip to get UV)
       run: pip install uv
       
-    # Install your project's dependencies using UV
     - name: Install dependencies
-      # UV sync reads pyproject.toml and uv.lock to install exact dependencies
       run: uv sync
       
-    # Create the Google Cloud service account JSON file from GitHub secrets
     - name: Create service account file
       run: |
-        echo "Creating service account file..."
-        if [ -z "${{ secrets.BIGQUERY_SERVICE_ACCOUNT_KEY }}" ]; then
-          echo "ERROR: BIGQUERY_SERVICE_ACCOUNT_KEY secret is empty or not set!"
-          exit 1
-        fi
-        
-        # Create the JSON file with proper escaping
         cat > connection-123-892e002c2def.json << 'EOF'
         ${{ secrets.BIGQUERY_SERVICE_ACCOUNT_KEY }}
         EOF
         
-        # Validate the JSON file
-        echo "Validating JSON structure..."
-        if ! python -m json.tool connection-123-892e002c2def.json > /dev/null; then
-          echo "ERROR: Invalid JSON in service account file!"
-          echo "First few characters of the file:"
-          head -c 100 connection-123-892e002c2def.json
-          exit 1
-        fi
-        
-        echo "Service account file created and validated successfully"
-    # Set up environment variables that your Python scripts will use
     - name: Set environment variables
       run: |
         echo "GOOGLE_APPLICATION_CREDENTIALS=connection-123-892e002c2def.json" >> $GITHUB_ENV
-        echo "GOOGLE_CLOUD_PROJECT=${{ secrets.GOOGLE_CLOUD_PROJECT }}" >> $GITHUB_ENV
+        echo "GOOGLE_CLOUD_PROJECT=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
         
-    # Run your main trading signals analysis script
     - name: Run trading signals
-      # Use 'uv run' to execute in the UV-managed virtual environment
       run: uv run python main.py
       
-    # Run your Bitcoin prediction script
     - name: Run bitcoin predictor
-      # Use 'uv run' to execute in the UV-managed virtual environment
       run: uv run python bitcoin_predictor.py
-
+      
     - name: Commit and push changes
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add logifile.txt "report analysis.txt" || true
-        git diff --staged --quiet || git commit -m "Update trading signals and analysis - $(date)"
+        git diff --staged --quiet || git commit -m "Update trading signals - $(date)"
         git push || true
       
-    # Clean up the temporary credentials file for security
     - name: Clean up credentials
-      # 'if: always()' means this step runs even if previous steps failed
       if: always()
-      # Remove the temporary JSON file (-f flag means "force", don't error if file doesn't exist)
       run: rm -f connection-123-892e002c2def.json
