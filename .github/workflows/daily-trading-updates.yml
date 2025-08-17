@@ -64,6 +64,14 @@ jobs:
     - name: Run bitcoin predictor
       # Use 'uv run' to execute in the UV-managed virtual environment
       run: uv run python bitcoin_predictor.py
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add logifile.txt "report analysis.txt" || true
+        git diff --staged --quiet || git commit -m "Update trading signals and analysis - $(date)"
+        git push || true
       
     # Clean up the temporary credentials file for security
     - name: Clean up credentials
