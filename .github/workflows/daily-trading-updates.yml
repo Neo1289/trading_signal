@@ -48,9 +48,16 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add logifile.txt "report analysis.txt" || true
-        git diff --staged --quiet || git commit -m "Update trading signals - $(date)"
-        git push || true
+        
+        git add logfile.txt reportanalysis.txt
+        
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          echo "Committing changes..."
+          git commit -m "Update trading signals and analysis - $(date)"
+          git push
+        fi
       
     - name: Clean up credentials
       if: always()
