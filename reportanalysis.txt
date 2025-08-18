@@ -1,36 +1,36 @@
 ================================================================================
 ================================================================================
 Bitcoin Technical Analysis Report
-Analysis Date: 2025-08-17 19:26:14
-Data Date: 2025-08-16
-Last Closing Price: $117,755.81
+Analysis Date: 2025-08-18 09:34:16
+Data Date: 2025-08-17
+Last Closing Price: $114,758.29
 ================================================================================
 
 MOVING AVERAGES:
-  Values: SMA-10: $118,596.74, SMA-20: $116,981.75, SMA-50: $115,375.44
-  Signal: BEARISH (below SMA-10); BULLISH (above SMA-20); BULLISH (above SMA-50)
+  Values: SMA-10: $118,300.76, SMA-20: $116,806.77, SMA-50: $115,518.88
+  Signal: BEARISH (below SMA-10); BEARISH (below SMA-20); BEARISH (below SMA-50)
 
 EXPONENTIAL MOVING AVERAGES:
-  Values: EMA-12: $118,115.87, EMA-26: $117,133.10, EMA-20: $117,572.72
-  Signal: BULLISH (above EMA-20); BULLISH (EMA-12 > EMA-26)
+  Values: EMA-12: $117,566.17, EMA-26: $116,939.73, EMA-20: $117,282.74
+  Signal: BEARISH (below EMA-20); BULLISH (EMA-12 > EMA-26)
 
 RSI:
-  Values: RSI-14: 49.0
+  Values: RSI-14: 38.2
   Signal: BEARISH (Below midline)
 
 MACD:
-  Values: MACD: 982.77, Signal: 954.48, Histogram: 28.28
-  Signal: BULLISH (MACD above signal); BULLISH (Positive histogram)
+  Values: MACD: 626.45, Signal: 885.63, Histogram: -259.18
+  Signal: BEARISH (MACD below signal); BEARISH (Negative histogram)
 
 BOLLINGER BANDS:
-  Values: Upper: $122,138.65, Lower: $111,824.84, Position: 0.58
-  Signal: BULLISH (Above middle band)
+  Values: Upper: $122,023.71, Lower: $111,589.82, Position: 0.30
+  Signal: BEARISH (Below middle band)
 
 VOLUME:
-  Values: Current: 19,569,935,271, 7-day avg: 49,331,057,434
+  Values: Current: 35,775,036,787, 7-day avg: 49,652,494,719
   Signal: BEARISH (Below average volume)
 
 ================================================================================
-SUMMARY: Technical analysis shows 4 bullish and 3 bearish signals (57% bullish). Overall sentiment: NEUTRAL
+SUMMARY: Technical analysis shows 1 bullish and 6 bearish signals (14% bullish). Overall sentiment: STRONGLY BEARISH
 ================================================================================
 ================================================================================
