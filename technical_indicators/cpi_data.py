@@ -46,8 +46,10 @@ def get_cpi_data(series_id: str = "CPILFESL") -> Optional[pd.DataFrame]:
     params = {
         "series_id": series_id,
         "observation_start": "2023-01-01",
+        "observation_end": "2028-12-31",  # Add explicit end date
         "frequency": "m",
-        "units": "pc1"
+        "units": "pc1",
+        "limit": "1000"  # Add limit to ensure you get more observations
     }
     result = fred_request(endpoint, params)
 
