@@ -263,7 +263,7 @@ class BitcoinPredictor:
             f.write("=" * 80 + "\n")
             f.write(f"Bitcoin Technical Analysis Report\n")
             f.write(f"Analysis Date: {current_datetime}\n")
-            f.write(f"Data Date: {analysis['date']}\n")
+            f.write(f"Latest Closing Date: {analysis['date']}\n")
             f.write(f"Last Closing Price: ${analysis['current_price']:,.2f}\n")
             f.write("=" * 80 + "\n")
 
