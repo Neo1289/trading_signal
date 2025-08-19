@@ -1,33 +1,33 @@
 ================================================================================
 ================================================================================
 Bitcoin Technical Analysis Report
-Analysis Date: 2025-08-18 09:34:16
-Data Date: 2025-08-17
-Last Closing Price: $114,758.29
+Analysis Date: 2025-08-19 09:28:58
+Data Date: 2025-08-18
+Last Closing Price: $115,417.78
 ================================================================================
 
 MOVING AVERAGES:
-  Values: SMA-10: $118,300.76, SMA-20: $116,806.77, SMA-50: $115,518.88
+  Values: SMA-10: $118,452.16, SMA-20: $116,824.22, SMA-50: $115,715.00
   Signal: BEARISH (below SMA-10); BEARISH (below SMA-20); BEARISH (below SMA-50)
 
 EXPONENTIAL MOVING AVERAGES:
-  Values: EMA-12: $117,566.17, EMA-26: $116,939.73, EMA-20: $117,282.74
+  Values: EMA-12: $117,598.14, EMA-26: $117,017.98, EMA-20: $117,345.07
   Signal: BEARISH (below EMA-20); BULLISH (EMA-12 > EMA-26)
 
 RSI:
-  Values: RSI-14: 38.2
+  Values: RSI-14: 39.2
   Signal: BEARISH (Below midline)
 
 MACD:
-  Values: MACD: 626.45, Signal: 885.63, Histogram: -259.18
+  Values: MACD: 580.16, Signal: 860.07, Histogram: -279.91
   Signal: BEARISH (MACD below signal); BEARISH (Negative histogram)
 
 BOLLINGER BANDS:
-  Values: Upper: $122,023.71, Lower: $111,589.82, Position: 0.30
+  Values: Upper: $121,983.82, Lower: $111,664.62, Position: 0.36
   Signal: BEARISH (Below middle band)
 
 VOLUME:
-  Values: Current: 35,775,036,787, 7-day avg: 49,652,494,719
+  Values: Current: 39,276,935,550, 7-day avg: 44,319,449,471
   Signal: BEARISH (Below average volume)
 
 ================================================================================
