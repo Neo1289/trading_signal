@@ -1,36 +1,36 @@
 ================================================================================
 ================================================================================
 Bitcoin Technical Analysis Report
-Analysis Date: 2025-08-19 09:28:58
-Data Date: 2025-08-18
-Last Closing Price: $115,417.78
+Analysis Date: 2025-08-20 09:29:57
+Latest Closing Date: 2025-08-19
+Last Closing Price: $113,807.81
 ================================================================================
 
 MOVING AVERAGES:
-  Values: SMA-10: $118,452.16, SMA-20: $116,824.22, SMA-50: $115,715.00
+  Values: SMA-10: $118,265.79, SMA-20: $116,664.88, SMA-50: $115,865.27
   Signal: BEARISH (below SMA-10); BEARISH (below SMA-20); BEARISH (below SMA-50)
 
 EXPONENTIAL MOVING AVERAGES:
-  Values: EMA-12: $117,598.14, EMA-26: $117,017.98, EMA-20: $117,345.07
+  Values: EMA-12: $117,124.18, EMA-26: $116,837.70, EMA-20: $117,080.45
   Signal: BEARISH (below EMA-20); BULLISH (EMA-12 > EMA-26)
 
 RSI:
-  Values: RSI-14: 39.2
+  Values: RSI-14: 33.4
   Signal: BEARISH (Below midline)
 
 MACD:
-  Values: MACD: 580.16, Signal: 860.07, Histogram: -279.91
+  Values: MACD: 286.48, Signal: 756.06, Histogram: -469.58
   Signal: BEARISH (MACD below signal); BEARISH (Negative histogram)
 
 BOLLINGER BANDS:
-  Values: Upper: $121,983.82, Lower: $111,664.62, Position: 0.36
+  Values: Upper: $121,943.82, Lower: $111,385.94, Position: 0.23
   Signal: BEARISH (Below middle band)
 
 VOLUME:
-  Values: Current: 39,276,935,550, 7-day avg: 44,319,449,471
-  Signal: BEARISH (Below average volume)
+  Values: Current: 45,478,834,262, 7-day avg: 45,262,126,023
+  Signal: BULLISH (Above average volume)
 
 ================================================================================
-SUMMARY: Technical analysis shows 1 bullish and 6 bearish signals (14% bullish). Overall sentiment: STRONGLY BEARISH
+SUMMARY: Technical analysis shows 2 bullish and 5 bearish signals (29% bullish). Overall sentiment: STRONGLY BEARISH
 ================================================================================
 ================================================================================
