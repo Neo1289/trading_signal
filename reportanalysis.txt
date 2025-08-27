@@ -250,3 +250,39 @@ VOLUME:
 SUMMARY: Technical analysis shows 2 bullish and 4 bearish signals (33% bullish). Overall sentiment: BEARISH
 ================================================================================
 ================================================================================
+================================================================================
+================================================================================
+Bitcoin Technical Analysis Report
+Analysis Date: 2025-08-27 09:27:41
+Latest Closing Date: 2025-08-26
+Last Closing Price: $110,970.01
+================================================================================
+
+MOVING AVERAGES:
+  Values: SMA-10: $113,999.35, SMA-20: $116,285.32, SMA-50: $116,556.72
+  Signal: BEARISH (below SMA-10); BEARISH (below SMA-20); BEARISH (below SMA-50)
+
+EXPONENTIAL MOVING AVERAGES:
+  Values: EMA-12: $114,150.91, EMA-26: $115,253.20, EMA-20: $115,014.51
+  Signal: BEARISH (below EMA-20); BEARISH (EMA-12 < EMA-26)
+
+RSI:
+  Values: RSI-14: 36.3
+  Signal: BEARISH (Below midline)
+
+MACD:
+  Values: MACD: -1102.29, Signal: -340.04, Histogram: -762.25
+  Signal: BEARISH (MACD below signal); BEARISH (Negative histogram)
+
+BOLLINGER BANDS:
+  Values: Upper: $122,774.09, Lower: $109,796.55, Position: 0.09
+  Signal: BULLISH (Near lower band - oversold)
+
+VOLUME:
+  Values: Current: 39,171,589,786, 7-day avg: 40,729,795,556
+  Signal: BEARISH (Below average volume)
+
+================================================================================
+SUMMARY: Technical analysis shows 1 bullish and 5 bearish signals (17% bullish). Overall sentiment: STRONGLY BEARISH
+================================================================================
+================================================================================
