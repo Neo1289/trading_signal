@@ -26,7 +26,8 @@ from technical_indicators import (
     bitcoin_ema,
     macd,
     rsi,
-    bollinger_bands
+    bollinger_bands,
+    ethereum_closing_prices
     )
 
 def main() -> None:
@@ -40,7 +41,8 @@ def main() -> None:
         bitcoin_ema,
         macd,
         rsi,
-        bollinger_bands
+        bollinger_bands,
+        ethereum_closing_prices
     ]
 
     for job in jobs:
