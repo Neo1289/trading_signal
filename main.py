@@ -27,7 +27,8 @@ from technical_indicators import (
     macd,
     rsi,
     bollinger_bands,
-    ethereum_closing_prices
+    ethereum_closing_prices,
+    tether_data
     )
 
 def main() -> None:
@@ -42,7 +43,8 @@ def main() -> None:
         macd,
         rsi,
         bollinger_bands,
-        ethereum_closing_prices
+        ethereum_closing_prices,
+        tether_data
     ]
 
     for job in jobs:
@@ -53,4 +55,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    
+
