@@ -33,6 +33,10 @@ jobs:
         ${{ secrets.BIGQUERY_SERVICE_ACCOUNT_KEY }}
         EOF
         
+    - name: Create CMC API key file
+      run: |
+        echo "${{ secrets.CMC_API_KEY }}" > cmc.txt
+        
     - name: Set environment variables
       run: |
         echo "GOOGLE_APPLICATION_CREDENTIALS=connection-123-892e002c2def.json" >> $GITHUB_ENV
@@ -61,4 +65,6 @@ jobs:
       
     - name: Clean up credentials
       if: always()
-      run: rm -f connection-123-892e002c2def.json
+      run: |
+        rm -f connection-123-892e002c2def.json
+        rm -f cmc.txt
