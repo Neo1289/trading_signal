@@ -3,7 +3,9 @@ import pandas as pd
 from google.cloud import bigquery
 from google.oauth2 import service_account
 import statsmodels.api as sm
-from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from typing import Tuple, Dict, List
+
 
 
 def fetch_all_indicators(credentials_path="connection-123-892e002c2def.json") -> pd.DataFrame:
@@ -43,45 +45,56 @@ def fetch_all_indicators(credentials_path="connection-123-892e002c2def.json") ->
     query_job = client.query(query)
     df = query_job.result().to_dataframe()
 
-    return df
+    return df.dropna()
 
-
-def btc_regression_model() -> tuple:
+def btc_regression_model() -> Tuple[pd.DataFrame, sm.regression.linear_model.RegressionResultsWrapper, StandardScaler]:
     data = fetch_all_indicators()
-    X = data.drop(['price', 'date_'], axis=1)
+
+    feature_cols = ['total_volume', 'sma_10', 'sma_20', 'sma_50',
+                    'ema_9', 'ema_12', 'ema_26', 'ema_20', 'ema_50']
+
+    feature_cols = [col for col in feature_cols if col in data.columns]
+
+    X = data[feature_cols]
     y = data['price']
 
-    X_train = sm.add_constant(X)
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    X_train = sm.add_constant(X_scaled)
+
     model = sm.OLS(y, X_train)
     results = model.fit()
 
-    return data, results
+    return data, results, scaler
 
-def predict_next_days(results, days=5):
-    data = fetch_all_indicators()
+def predict_next_days(results: sm.regression.linear_model.RegressionResultsWrapper,
+                      data: pd.DataFrame,
+                      scaler: StandardScaler,
+                      days: int = 1
+                      ) -> pd.DataFrame:
 
-    latest_indicators = data.iloc[-1][['market_cap', 'total_volume', 'sma_10', 'sma_20', 'sma_50',
-                                      'ema_9', 'ema_12', 'ema_26', 'ema_20', 'ema_50']].values
+    feature_cols = ['total_volume', 'sma_10', 'sma_20', 'sma_50',
+                    'ema_9', 'ema_12', 'ema_26', 'ema_20', 'ema_50']
+    feature_cols = [col for col in feature_cols if col in data.columns]
 
-    predictions = []
-    current_indicators = latest_indicators.copy()
+    last_row = data[feature_cols].iloc[-1].values
 
-    for day in range(1, days + 1):
-        X_pred = np.insert(current_indicators, 0, 1)
-        predicted_price = results.predict(X_pred)[0]
-        predictions.append({
-            'day': day,
-            'predicted_price': predicted_price,
-            'date': pd.Timestamp.now() + pd.Timedelta(days=day)
-        })
+    # Use the same scaler from training
+    last_row_scaled = scaler.transform([last_row])
+    X_pred = sm.add_constant(last_row_scaled)
 
-        current_indicators[2:5] = current_indicators[2:5] * 0.95 + predicted_price * 0.05
-        current_indicators[5:] = current_indicators[5:] * 0.9 + predicted_price * 0.1
+    predicted_price = results.predict(X_pred)[0]
 
-    return pd.DataFrame(predictions)
+    last_date = pd.to_datetime(data['date_'].iloc[-1])
+    next_date = last_date + pd.Timedelta(days=days)
+
+    return pd.DataFrame({
+        'date': [next_date],
+        'predicted_price': [predicted_price]
+    })
 
 if __name__ == "__main__":
-    data, results = btc_regression_model()
-    future_predictions = predict_next_days(results, days=5)
-    print("Next 5 Days Bitcoin Price Predictions:")
+    data, results, scaler = btc_regression_model()
+    future_predictions = predict_next_days(results, data, scaler)
+    print("Next Day Bitcoin Price Predictions:")
     print(future_predictions[['date', 'predicted_price']].round(2))
