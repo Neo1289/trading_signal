@@ -751,3 +751,32 @@
 2025-09-14 09:23:16,389 - __main__ - INFO - Query processed 78,072 bytes (0.07 MB)
 2025-09-14 09:23:16,389 - __main__ - INFO - Fetched 180 rows of combined indicator data
 2025-09-14 09:23:16,390 - __main__ - INFO - Technical analysis report generated and saved to 'report analysis.txt'
+2025-09-15 09:28:57,429 - __main__ - INFO - Starting ETL job: Technical_Indicators.Bitcoin_Transactions_Volume
+2025-09-15 09:28:59,828 - technical_indicators.bitcoin_transactions_volume - INFO - Query processed 371,712 bytes (0.35 MB)
+2025-09-15 09:29:04,587 - pandas_gbq.gbq_connector - INFO - 107 out of 107 rows loaded.
+2025-09-15 09:29:04,587 - __main__ - INFO - Starting ETL job: Technical_Indicators.Bitcoin_Closing_Prices
+2025-09-15 09:29:04,710 - technical_indicators.bitcoin_closing_prices - INFO - imported 365 rows of data from https://api.coingecko.com/api/v3/coins/bitcoin/market_chart
+2025-09-15 09:29:08,193 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-09-15 09:29:08,193 - __main__ - INFO - Starting ETL job: Technical_Indicators.Btc_Moving_Averages
+2025-09-15 09:29:13,251 - technical_indicators.btc_moving_averages - INFO - Query processed 5,840 bytes (0.01 MB)
+2025-09-15 09:29:16,711 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-09-15 09:29:16,711 - __main__ - INFO - Starting ETL job: Technical_Indicators.Bitcoin_Ema
+2025-09-15 09:29:18,753 - technical_indicators.bitcoin_ema - INFO - Query processed 5,840 bytes (0.01 MB)
+2025-09-15 09:29:22,256 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-09-15 09:29:22,256 - __main__ - INFO - Starting ETL job: Technical_Indicators.Macd
+2025-09-15 09:29:24,362 - technical_indicators.macd - INFO - Query processed 11,680 bytes (0.01 MB)
+2025-09-15 09:29:28,181 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-09-15 09:29:28,181 - __main__ - INFO - Starting ETL job: Technical_Indicators.Rsi
+2025-09-15 09:29:30,271 - technical_indicators.rsi - INFO - Query processed 5,840 bytes (0.01 MB)
+2025-09-15 09:29:33,038 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-09-15 09:29:33,038 - __main__ - INFO - Starting ETL job: Technical_Indicators.Bollinger_Bands
+2025-09-15 09:29:35,295 - technical_indicators.bollinger_bands - INFO - Query processed 5,840 bytes (0.01 MB)
+2025-09-15 09:29:38,665 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-09-15 09:29:38,665 - __main__ - INFO - Starting ETL job: Technical_Indicators.Ethereum_Closing_Prices
+2025-09-15 09:29:38,789 - technical_indicators.ethereum_closing_prices - INFO - imported 365 rows of data from https://api.coingecko.com/api/v3/coins/ethereum/market_chart
+2025-09-15 09:29:45,190 - __main__ - INFO - Starting ETL job: Technical_Indicators.Tether_Data
+2025-09-15 09:29:45,358 - technical_indicators.tether_data - INFO - imported 365 rows of data from https://api.coingecko.com/api/v3/coins/tether/market_chart
+2025-09-15 09:29:54,321 - __main__ - INFO - Starting ETL job: Technical_Indicators.Cmc_Data
+2025-09-15 09:30:00,520 - __main__ - INFO - Query processed 78,072 bytes (0.07 MB)
+2025-09-15 09:30:00,520 - __main__ - INFO - Fetched 180 rows of combined indicator data
+2025-09-15 09:30:00,521 - __main__ - INFO - Technical analysis report generated and saved to 'report analysis.txt'
