@@ -64,7 +64,6 @@ def schema() -> list[dict]:
     ]
     return table_schema
 
-
 def run_etl(credentials,dataset:str) -> None:
     project = "connection-123"
     client = bigquery.Client(credentials=credentials, project=project)

@@ -29,7 +29,8 @@ from technical_indicators import (
     bollinger_bands,
     ethereum_closing_prices,
     tether_data,
-    cmc_data
+    cmc_data,
+    mvrv_score
     )
 
 def main() -> None:
@@ -46,7 +47,8 @@ def main() -> None:
         bollinger_bands,
         ethereum_closing_prices,
         tether_data,
-        cmc_data
+        cmc_data,
+        mvrv_score
     ]
 
     for job in jobs:
