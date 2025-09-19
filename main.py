@@ -30,7 +30,8 @@ from technical_indicators import (
     ethereum_closing_prices,
     tether_data,
     cmc_data,
-    mvrv_score
+    mvrv_score,
+    others_dominance
     )
 
 def main() -> None:
@@ -48,7 +49,8 @@ def main() -> None:
         ethereum_closing_prices,
         tether_data,
         cmc_data,
-        mvrv_score
+        mvrv_score,
+        others_dominance
     ]
 
     for job in jobs:
