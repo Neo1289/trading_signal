@@ -37,7 +37,7 @@ def calculate_ema(credentials,periods=[9,12, 26, 20, 50, 200]) -> pd.DataFrame:
         # Calculate EMA using the 'price' column
         ema[ema_column] = ema['price'].ewm(span=period, adjust=False).mean()
     
-    return ema
+    return ema, bytes_processed
 
 def schema() -> list[dict]:
     """
@@ -57,7 +57,7 @@ def schema() -> list[dict]:
 
 def run_etl(credentials,dataset:str) -> None:
    
-    table = calculate_ema(credentials)
+    table,bytes_processed = calculate_ema(credentials)
     table_schema = schema()
     target_table = dataset + destination_table
 
@@ -69,3 +69,5 @@ def run_etl(credentials,dataset:str) -> None:
         credentials=credentials,
         if_exists="replace" 
     )
+
+    return bytes_processed

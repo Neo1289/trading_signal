@@ -77,3 +77,5 @@ def run_etl(credentials,dataset:str) -> None:
         credentials=credentials,
         if_exists="replace" 
     )
+
+    return 0

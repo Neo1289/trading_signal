@@ -90,3 +90,4 @@ def run_etl(credentials,dataset:str) -> None:
 
     job.result()
 
+    return 0

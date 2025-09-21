@@ -29,7 +29,7 @@ def fetch_data(credentials) -> pd.DataFrame:
     bytes_processed = query_job.total_bytes_processed
     logger.info(f"Query processed {bytes_processed:,} bytes ({bytes_processed / 1024 / 1024:.2f} MB)")
 
-    return dominance_data
+    return dominance_data, bytes_processed
 
 def schema() -> list[dict]:
     """
@@ -44,7 +44,7 @@ def schema() -> list[dict]:
     return table_schema
 
 def run_etl(credentials, dataset: str) -> None:
-    table = fetch_data(credentials)
+    table, bytes_processed = fetch_data(credentials)
     table_schema = schema()
     target_table = dataset + destination_table
 
@@ -57,3 +57,4 @@ def run_etl(credentials, dataset: str) -> None:
         if_exists="replace"
     )
 
+    return bytes_processed
