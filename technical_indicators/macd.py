@@ -37,7 +37,7 @@ def calculate_macd(credentials) -> pd.DataFrame:
     # Return only the MACD components
     macd_result = df[['timestamp', 'macd_line', 'signal_line', 'histogram']].copy()
 
-    return macd_result
+    return macd_result, bytes_processed
 
 def schema() -> list[dict]:
     """
@@ -53,7 +53,7 @@ def schema() -> list[dict]:
 
 
 def run_etl(credentials, dataset: str) -> None:
-    table = calculate_macd(credentials)
+    table,bytes_processed = calculate_macd(credentials)
     table_schema = schema()
     target_table = dataset + destination_table
 
@@ -65,3 +65,5 @@ def run_etl(credentials, dataset: str) -> None:
         credentials=credentials,
         if_exists="replace"
     )
+
+    return bytes_processed

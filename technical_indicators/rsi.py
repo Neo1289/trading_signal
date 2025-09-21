@@ -45,7 +45,7 @@ def calculate_rsi(credentials) -> pd.DataFrame:
     # Return timestamp and RSI
     rsi_result = df[['timestamp', 'rsi_14']].copy()
 
-    return rsi_result
+    return rsi_result, bytes_processed
 
 def schema() -> list[dict]:
     """
@@ -59,7 +59,7 @@ def schema() -> list[dict]:
     return table_schema
 
 def run_etl(credentials, dataset: str) -> None:
-    table = calculate_rsi(credentials)
+    table,bytes_processed = calculate_rsi(credentials)
     table_schema = schema()
     target_table = dataset + destination_table
 
@@ -71,3 +71,5 @@ def run_etl(credentials, dataset: str) -> None:
         credentials=credentials,
         if_exists="replace"
     )
+
+    return bytes_processed

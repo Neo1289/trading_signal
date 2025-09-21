@@ -40,7 +40,7 @@ def calculate_ma(credentials) -> pd.DataFrame:
     bytes_processed = query_job.total_bytes_processed
     logger.info(f"Query processed {bytes_processed:,} bytes ({bytes_processed / 1024 / 1024:.2f} MB)")
 
-    return mas
+    return mas, bytes_processed
 
 def schema() -> list[dict]:
     """
@@ -57,7 +57,7 @@ def schema() -> list[dict]:
 
 def run_etl(credentials,dataset:str) -> None:
    
-    table = calculate_ma(credentials)
+    table, bytes_processed = calculate_ma(credentials)
     table_schema = schema()
     target_table = dataset + destination_table
 
@@ -69,3 +69,5 @@ def run_etl(credentials,dataset:str) -> None:
         credentials=credentials,
         if_exists="replace" 
     )
+
+    return bytes_processed

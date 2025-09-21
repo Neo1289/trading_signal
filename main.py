@@ -31,7 +31,8 @@ from technical_indicators import (
     tether_data,
     cmc_data,
     mvrv_score,
-    others_dominance
+    others_dominance,
+    total_three_divided_btc
     )
 
 def main() -> None:
@@ -50,14 +51,20 @@ def main() -> None:
         tether_data,
         cmc_data,
         mvrv_score,
-        others_dominance
+        others_dominance,
+        total_three_divided_btc
     ]
+
+    total_bytes_processed = 0
 
     for job in jobs:
         job_name = job.__name__.title()
         logger.info(f"Starting ETL job: {job_name}")
-    
-        job.run_etl(credentials, dataset)
+
+        bytes_processed = job.run_etl(credentials, dataset)
+        total_bytes_processed += bytes_processed
+
+    logger.info(f"Total bytes processed across all jobs: {total_bytes_processed / 1024 / 1024:.2f} MB)")
 
 if __name__ == "__main__":
     main()

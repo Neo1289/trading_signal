@@ -49,7 +49,7 @@ def calculate_bollinger_bands(credentials) -> pd.DataFrame:
     # Return Bollinger Bands components with timestamp
     bollinger_result = df[['timestamp', 'price', 'middle_band', 'upper_band', 'lower_band', 'bb_width', 'percent_b']].copy()
 
-    return bollinger_result
+    return bollinger_result, bytes_processed
 
 def schema() -> list[dict]:
     """
@@ -65,7 +65,7 @@ def schema() -> list[dict]:
     return table_schema
 
 def run_etl(credentials, dataset: str) -> None:
-    table = calculate_bollinger_bands(credentials)
+    table, bytes_processed = calculate_bollinger_bands(credentials)
     table_schema = schema()
     target_table = dataset + destination_table
 
@@ -78,4 +78,4 @@ def run_etl(credentials, dataset: str) -> None:
         if_exists="replace"
     )
 
-
+    return bytes_processed
