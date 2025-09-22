@@ -58,13 +58,21 @@ def main() -> None:
     total_bytes_processed = 0
 
     for job in jobs:
-        job_name = job.__name__.title()
-        logger.info(f"Starting ETL job: {job_name}")
+        try:
+            job_name = job.__name__.title()
+            logger.info(f"Starting ETL job: {job_name}")
 
-        bytes_processed = job.run_etl(credentials, dataset)
-        total_bytes_processed += bytes_processed
+            bytes_processed = job.run_etl(credentials, dataset)
+            total_bytes_processed += bytes_processed
 
-    logger.info(f"Total bytes processed across all jobs: {total_bytes_processed / 1024 / 1024:.2f} MB)")
+        except ValueError as e:
+            logger.warning(f"Invalid value: {e}")
+        except FileNotFoundError as e:
+            logger.error(f"File not found: {e}")
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}", exc_info=True)
+
+        logger.info(f"Total bytes processed across all jobs: {total_bytes_processed / 1024 / 1024:.2f} MB)")
 
 if __name__ == "__main__":
     main()
