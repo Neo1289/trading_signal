@@ -70,7 +70,7 @@ def main() -> None:
         bollinger_bands,
         ethereum_closing_prices,
         tether_data,
-        #cmc_data,
+        cmc_data,
         mvrv_score,
         others_dominance,
         total_three_divided_btc
