@@ -63,19 +63,24 @@ def schema() -> list[dict]:
     ]
     return table_schema
 
-def run_etl(credentials,dataset:str) -> None:
-   
-    table = fetch_bitcoin_price()
-    table_schema = schema()
-    target_table = dataset + destination_table
+def run_etl(credentials,dataset:str,mode:str) -> None:
 
-    pandas_gbq.to_gbq(
-        dataframe=table,
-        destination_table=target_table,
-        project_id="connection-123",
-        table_schema=table_schema,
-        credentials=credentials,
-        if_exists="replace" 
-    )
+    if mode == 'prod':
 
-    return 0
+        table = fetch_bitcoin_price()
+        table_schema = schema()
+        target_table = dataset + destination_table
+
+        pandas_gbq.to_gbq(
+            dataframe=table,
+            destination_table=target_table,
+            project_id="connection-123",
+            table_schema=table_schema,
+            credentials=credentials,
+            if_exists="replace"
+        )
+
+        return 0
+
+    else:
+        print('no production mode')

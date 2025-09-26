@@ -2,6 +2,7 @@ import logging
 from google.oauth2 import service_account
 from typing import Any
 import time
+import os
 
 
 logging.basicConfig(
@@ -56,10 +57,18 @@ def validate_job_result(job_name: str, result: Any) -> bool:
     logger.debug(f"{job_name}: Validation passed - {result} bytes processed")
     return True
 
+def is_running_locally():
+    if os.getenv('COMPUTERNAME') is not None:
+        return 'local'
+    else:
+        return 'prod'
+
 def main() -> None:
     
     credentials = service_account.Credentials.from_service_account_file("connection-123-892e002c2def.json")
-    
+
+    mode = is_running_locally()
+
     jobs = [
         bitcoin_transactions_volume,
         bitcoin_closing_prices,
@@ -86,7 +95,7 @@ def main() -> None:
 
             start_time = time.time()
 
-            bytes_processed = job.run_etl(credentials, dataset)
+            bytes_processed = job.run_etl(credentials, dataset, mode)
 
             # Validate the result
             if validate_job_result(job_name, bytes_processed):
