@@ -1,11 +1,13 @@
 import pandas as pd
 import requests
 import pandas_gbq
-from google.cloud import bigquery
-from typing import Any
 import os
 import logging
-from google.oauth2 import service_account
+from pathlib import Path
+
+current_dir = Path(__file__).parent
+local_folder = current_dir.parent / "testing_area"
+local_folder_string = str(local_folder.resolve())
 
 destination_table = "bitcoin_price"
 
@@ -83,4 +85,9 @@ def run_etl(credentials,dataset:str,mode:str) -> None:
         return 0
 
     else:
-        print('no production mode')
+        print('test mode')
+        table = fetch_bitcoin_price()
+        csv_filename = os.path.join(local_folder_string, "bitcoin_closing_prices_local.csv")
+        table.to_csv(csv_filename, index=False)
+        print(f'Data saved to {csv_filename}')
+        return 0
