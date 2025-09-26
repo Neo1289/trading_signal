@@ -1,10 +1,14 @@
 import pandas as pd
 import pandas_gbq
 from google.cloud import bigquery
-from typing import Any
-from google.oauth2 import service_account
 import logging
-from datetime import datetime, timedelta
+import os
+from pathlib import Path
+
+current_dir = Path(__file__).parent
+local_folder = current_dir.parent / "testing_area"
+local_folder_string = str(local_folder.resolve())
+
 
 destination_table = "btc_ema"
 
@@ -75,4 +79,9 @@ def run_etl(credentials,dataset:str,mode:str) -> None:
         return bytes_processed
 
     else:
-        print('no production mode')
+        print('test mode')
+        table,bytes_processed = calculate_ema(credentials,periods=[9,12, 26, 20, 50, 200])
+        csv_filename = os.path.join(local_folder,"bitcoin_ema_local.csv")
+        table.to_csv(csv_filename, index=False)
+        print(f'Data saved to {csv_filename}')
+        return bytes_processed

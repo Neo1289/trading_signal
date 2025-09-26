@@ -3,6 +3,13 @@ import pandas as pd
 import functools
 from datetime import datetime
 import pandas_gbq
+from pathlib import Path
+import os
+
+current_dir = Path(__file__).parent
+local_folder = current_dir.parent / "testing_area"
+local_folder_string = str(local_folder.resolve())
+
 
 destination_table = "bitcoin_fifty_week"
 
@@ -58,4 +65,10 @@ def run_etl(credentials, dataset: str, mode: str) -> None:
         return 0
 
     else:
-        print('no production mode')
+        print('test mode')
+        current_week = current_week_func()
+        table = fetch_transactions(current_week)
+        csv_filename = os.path.join(local_folder,"bitcoin_closing_prices_local.csv")
+        table.to_csv(csv_filename, index=False)
+        print(f'Data saved to {csv_filename}')
+        return 0
