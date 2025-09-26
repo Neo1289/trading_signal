@@ -55,19 +55,24 @@ def schema() -> list[dict]:
     ]
     return table_schema
 
-def run_etl(credentials,dataset:str) -> None:
-   
-    table,bytes_processed = calculate_ema(credentials)
-    table_schema = schema()
-    target_table = dataset + destination_table
+def run_etl(credentials,dataset:str,mode:str) -> None:
 
-    pandas_gbq.to_gbq(
-        dataframe=table,
-        destination_table=target_table,
-        project_id="connection-123",
-        table_schema=table_schema,
-        credentials=credentials,
-        if_exists="replace" 
-    )
+    if mode == 'prod':
 
-    return bytes_processed
+        table,bytes_processed = calculate_ema(credentials)
+        table_schema = schema()
+        target_table = dataset + destination_table
+
+        pandas_gbq.to_gbq(
+            dataframe=table,
+            destination_table=target_table,
+            project_id="connection-123",
+            table_schema=table_schema,
+            credentials=credentials,
+            if_exists="replace"
+        )
+
+        return bytes_processed
+
+    else:
+        print('no production mode')

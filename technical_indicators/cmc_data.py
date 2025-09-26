@@ -77,30 +77,36 @@ def schema() -> list[dict]:
     ]
     return table_schema
 
-def run_etl(credentials,dataset:str) -> None:
-    project = "connection-123"
-    client = bigquery.Client(credentials=credentials, project=project)
-    table = fetch_cmc_data()
-    table_schema = schema()
+def run_etl(credentials,dataset:str,mode:str) -> None:
 
-    job_config = bigquery.LoadJobConfig(
-        schema=table_schema,
-        write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
-        time_partitioning=bigquery.TimePartitioning(
-            type_=bigquery.TimePartitioningType.DAY,
-            field="status_timestamp"
-        ),
-        destination_table_description="Global snapshot of CoinMarketCap aggregated metrics (market caps, 24h volumes, dominance and sector-specific caps) quoted in USD. One row per API response"
-    )
+    if mode == 'prod':
 
-    table_ref = dataset + destination_table
+        project = "connection-123"
+        client = bigquery.Client(credentials=credentials, project=project)
+        table = fetch_cmc_data()
+        table_schema = schema()
 
-    job = client.load_table_from_dataframe(
-        table,
-        table_ref,
-        job_config=job_config
-    )
+        job_config = bigquery.LoadJobConfig(
+            schema=table_schema,
+            write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
+            time_partitioning=bigquery.TimePartitioning(
+                type_=bigquery.TimePartitioningType.DAY,
+                field="status_timestamp"
+            ),
+            destination_table_description="Global snapshot of CoinMarketCap aggregated metrics (market caps, 24h volumes, dominance and sector-specific caps) quoted in USD. One row per API response"
+        )
 
-    job.result()
+        table_ref = dataset + destination_table
 
-    return 0
+        job = client.load_table_from_dataframe(
+            table,
+            table_ref,
+            job_config=job_config
+        )
+
+        job.result()
+
+        return 0
+
+    else:
+        print('no production mode')
