@@ -1,17 +1,15 @@
-import json
-import os
 import requests
 import pandas as pd
-from datetime import datetime
-import numpy as np
-from typing import List, Dict, TypedDict, Optional, Any
+from typing import  Dict, Optional, Any
 import logging
-from google.oauth2 import service_account
-import pandas_gbq
 from pathlib import Path
 from google.cloud import bigquery
 
 current_dir = Path(__file__).parent
+
+local_folder = current_dir / "testing_area"
+local_folder_string = str(local_folder.resolve())
+
 api_key_path = current_dir.parent / "fred_api_key.txt"
 api_key_path_str = str(api_key_path.resolve())
 
@@ -108,4 +106,4 @@ def run_etl(credentials,dataset:str,mode:str) -> None:
         return 0
 
     else:
-        print('no production mode')
+        print('no production or test mode')

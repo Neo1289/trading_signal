@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 
 current_dir = Path(__file__).parent
-local_folder = current_dir.parent / "testing_area"
+local_folder = current_dir / "testing_area"
 local_folder_string = str(local_folder.resolve())
 
 destination_table = "bitcoin_price"
@@ -65,7 +65,7 @@ def schema() -> list[dict]:
     ]
     return table_schema
 
-def run_etl(credentials,dataset:str,mode:str) -> None:
+def run_etl(credentials,dataset:str,mode:str) -> int:
 
     if mode == 'prod':
 
@@ -87,7 +87,13 @@ def run_etl(credentials,dataset:str,mode:str) -> None:
     else:
         print('test mode')
         table = fetch_bitcoin_price()
-        csv_filename = os.path.join(local_folder_string, "bitcoin_closing_prices_local.csv")
+
+        # Create subdirectory if it doesn't exist
+        subdir = local_folder / fetch_bitcoin_price.__name__
+        subdir.mkdir(parents=True, exist_ok=True)
+
+        csv_filename = os.path.join(str(subdir), "data.csv")
         table.to_csv(csv_filename, index=False)
         print(f'Data saved to {csv_filename}')
+
         return 0
