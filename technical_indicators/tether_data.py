@@ -1,8 +1,14 @@
 import pandas as pd
 import requests
 from google.cloud import bigquery
-from typing import Any
 import logging
+import os
+from pathlib import Path
+
+current_dir = Path(__file__).parent
+local_folder = current_dir / "testing_area"
+local_folder_string = str(local_folder.resolve())
+
 
 destination_table = "tether_data"
 
@@ -58,7 +64,7 @@ def schema() -> list[dict]:
     return table_schema
 
 
-def run_etl(credentials,dataset:str,mode:str) -> None:
+def run_etl(credentials,dataset:str,mode:str) -> int:
 
     if mode == 'prod':
 
@@ -90,4 +96,13 @@ def run_etl(credentials,dataset:str,mode:str) -> None:
         return 0
 
     else:
-        print('no production mode')
+        print('test mode')
+        table = fetch_tether_data()
+        # Create subdirectory if it doesn't exist
+        subdir = local_folder / fetch_tether_data.__name__
+        subdir.mkdir(parents=True, exist_ok=True)
+
+        csv_filename = os.path.join(str(subdir), "data.csv")
+        table.to_csv(csv_filename, index=False)
+        print(f'Data saved to {csv_filename}')
+        return 0

@@ -2,25 +2,23 @@ import json
 import os
 import requests
 import pandas as pd
-from datetime import datetime
-import numpy as np
-from typing import List, Dict, TypedDict, Optional, Any
-import logging
-from google.oauth2 import service_account
-import pandas_gbq
 from pathlib import Path
 from google.cloud import bigquery
+import os
 
 current_dir = Path(__file__).parent
 api_key_path = current_dir.parent / "cmc.txt"
 api_key_path_str = str(api_key_path.resolve())
+
+local_folder = current_dir / "testing_area"
+local_folder_string = str(local_folder.resolve())
 
 with open(api_key_path_str, 'r') as f:
     api_key = f.read().strip()
 
 destination_table = "cmc_data"
 
-def fetch_cmc_data() -> dict:
+def fetch_cmc_data() -> pd.DataFrame:
 
     url = 'https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest'
 
@@ -77,7 +75,7 @@ def schema() -> list[dict]:
     ]
     return table_schema
 
-def run_etl(credentials,dataset:str,mode:str) -> None:
+def run_etl(credentials, dataset:str, mode:str) -> int:
 
     if mode == 'prod':
 
@@ -109,4 +107,14 @@ def run_etl(credentials,dataset:str,mode:str) -> None:
         return 0
 
     else:
-        print('no production mode')
+        print('test mode')
+        table = fetch_cmc_data()
+        # Create subdirectory if it doesn't exist
+        subdir = local_folder / fetch_cmc_data.__name__
+        subdir.mkdir(parents=True, exist_ok=True)
+
+        csv_filename = os.path.join(str(subdir), "data.csv")
+        table.to_csv(csv_filename, index=False)
+        print(f'Data saved to {csv_filename}')
+        return 0
+

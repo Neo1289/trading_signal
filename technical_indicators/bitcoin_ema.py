@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 current_dir = Path(__file__).parent
-local_folder = current_dir.parent / "testing_area"
+local_folder = current_dir / "testing_area"
 local_folder_string = str(local_folder.resolve())
 
 
@@ -14,7 +14,7 @@ destination_table = "btc_ema"
 
 logger = logging.getLogger(__name__)
 
-def calculate_ema(credentials,periods=[9,12, 26, 20, 50, 200]) -> pd.DataFrame:
+def calculate_ema(credentials,periods=[9,12, 26, 20, 50, 200]) -> tuple[pd.DataFrame,int]:
     client = bigquery.Client(credentials=credentials, project=credentials.project_id)
 
     query = """
@@ -59,7 +59,7 @@ def schema() -> list[dict]:
     ]
     return table_schema
 
-def run_etl(credentials,dataset:str,mode:str) -> None:
+def run_etl(credentials,dataset:str,mode:str) -> int:
 
     if mode == 'prod':
 
@@ -81,7 +81,12 @@ def run_etl(credentials,dataset:str,mode:str) -> None:
     else:
         print('test mode')
         table,bytes_processed = calculate_ema(credentials,periods=[9,12, 26, 20, 50, 200])
-        csv_filename = os.path.join(local_folder,"bitcoin_ema_local.csv")
+        # Create subdirectory if it doesn't exist
+        subdir = local_folder / calculate_ema.__name__
+        subdir.mkdir(parents=True, exist_ok=True)
+
+        csv_filename = os.path.join(str(subdir), "data.csv")
+
         table.to_csv(csv_filename, index=False)
         print(f'Data saved to {csv_filename}')
         return bytes_processed

@@ -7,7 +7,7 @@ from pathlib import Path
 import os
 
 current_dir = Path(__file__).parent
-local_folder = current_dir.parent / "testing_area"
+local_folder = current_dir / "testing_area"
 local_folder_string = str(local_folder.resolve())
 
 
@@ -44,7 +44,7 @@ def schema() -> list[dict]:
     ]
     return table_schema
 
-def run_etl(credentials, dataset: str, mode: str) -> None:
+def run_etl(credentials, dataset: str, mode: str) -> int:
 
     if mode == 'prod':
 
@@ -68,7 +68,11 @@ def run_etl(credentials, dataset: str, mode: str) -> None:
         print('test mode')
         current_week = current_week_func()
         table = fetch_transactions(current_week)
-        csv_filename = os.path.join(local_folder,"bitcoin_closing_prices_local.csv")
+        # Create subdirectory if it doesn't exist
+        subdir = local_folder / fetch_transactions.__name__
+        subdir.mkdir(parents=True, exist_ok=True)
+
+        csv_filename = os.path.join(str(subdir), "data.csv")
         table.to_csv(csv_filename, index=False)
         print(f'Data saved to {csv_filename}')
         return 0
