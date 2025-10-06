@@ -4,6 +4,7 @@ from typing import Any
 import time
 import os
 
+from technical_indicators.fear_greed import fetch_fear_greed_index
 
 logging.basicConfig(
     filename='logfile.txt',  
@@ -28,7 +29,8 @@ from technical_indicators import (
     cmc_data,
     mvrv_score,
     others_dominance,
-    total_three_divided_btc
+    total_three_divided_btc,
+    fear_greed
     )
 
 
@@ -82,7 +84,8 @@ def main() -> None:
         cmc_data,
         mvrv_score,
         others_dominance,
-        total_three_divided_btc
+        total_three_divided_btc,
+        fear_greed
     ]
 
     total_bytes_processed = 0
