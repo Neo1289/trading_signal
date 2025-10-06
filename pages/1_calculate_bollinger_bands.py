@@ -26,58 +26,61 @@ for dirpath, dirnames, filenames in walk(data_path_str):
     if matching_data_file:
         break
 
-@st.cache_data(ttl=3600)
+@st.cache_data
 def load_data(matching_data_file):
     df = pd.read_csv(matching_data_file)
     return df
 
+def streamlit_page():
+    st.title("Calculate bollinger bands")
 
-st.title("Calculate bollinger bands")
+    df = load_data(matching_data_file)
 
-df = load_data(matching_data_file)
+    # Only plot if required columns exist
+    required_columns = ['price', 'upper_band', 'middle_band', 'lower_band']
+    missing_columns = [col for col in required_columns if col not in df.columns]
 
-# Only plot if required columns exist
-required_columns = ['price', 'upper_band', 'middle_band', 'lower_band']
-missing_columns = [col for col in required_columns if col not in df.columns]
-
-if missing_columns:
-    st.error(f"Missing required columns: {missing_columns}")
-    st.info("Please ensure your data.csv contains: price, upper_band, middle_band, lower_band")
-else:
-    # Create subplots
-    fig = make_subplots(
-        rows=3, cols=1,
-        shared_xaxes=True,
-        vertical_spacing=0.05,
-        subplot_titles=('Bollinger Bands', 'BB Width', '%B'),
-        row_heights=[0.5, 0.25, 0.25]
-    )
-
-    # Try using index if date is not a column
-    if 'date' not in df.columns:
-        x_data = df.index
+    if missing_columns:
+        st.error(f"Missing required columns: {missing_columns}")
+        st.info("Please ensure your data.csv contains: price, upper_band, middle_band, lower_band")
     else:
-        x_data = df['date']
+        # Create subplots
+        fig = make_subplots(
+            rows=3, cols=1,
+            shared_xaxes=True,
+            vertical_spacing=0.05,
+            subplot_titles=('Bollinger Bands', 'BB Width', '%B'),
+            row_heights=[0.5, 0.25, 0.25]
+        )
 
-    # Bollinger Bands
-    fig.add_trace(go.Scatter(x=x_data, y=df['price'], name='Price', line=dict(color='blue')), row=1, col=1)
-    fig.add_trace(go.Scatter(x=x_data, y=df['upper_band'], name='Upper Band', line=dict(color='red', dash='dash')), row=1, col=1)
-    fig.add_trace(go.Scatter(x=x_data, y=df['middle_band'], name='Middle Band', line=dict(color='gray', dash='dash')), row=1, col=1)
-    fig.add_trace(go.Scatter(x=x_data, y=df['lower_band'], name='Lower Band', line=dict(color='green', dash='dash')), row=1, col=1)
+        # Try using index if date is not a column
+        if 'date' not in df.columns:
+            x_data = df.index
+        else:
+            x_data = df['date']
 
-    # BB Width
-    if 'bb_width' in df.columns:
-        fig.add_trace(go.Scatter(x=x_data, y=df['bb_width'], name='BB Width', line=dict(color='purple')), row=2, col=1)
+        # Bollinger Bands
+        fig.add_trace(go.Scatter(x=x_data, y=df['price'], name='Price', line=dict(color='blue')), row=1, col=1)
+        fig.add_trace(go.Scatter(x=x_data, y=df['upper_band'], name='Upper Band', line=dict(color='red', dash='dash')), row=1, col=1)
+        fig.add_trace(go.Scatter(x=x_data, y=df['middle_band'], name='Middle Band', line=dict(color='gray', dash='dash')), row=1, col=1)
+        fig.add_trace(go.Scatter(x=x_data, y=df['lower_band'], name='Lower Band', line=dict(color='green', dash='dash')), row=1, col=1)
 
-    # %B
-    if 'percent_b' in df.columns:
-        fig.add_trace(go.Scatter(x=x_data, y=df['percent_b'], name='%B', line=dict(color='orange')), row=3, col=1)
-        # Add reference lines at 0, 0.5, and 1
-        fig.add_hline(y=0, line_dash="dot", line_color="gray", row=3, col=1)
-        fig.add_hline(y=0.5, line_dash="dot", line_color="gray", row=3, col=1)
-        fig.add_hline(y=1, line_dash="dot", line_color="gray", row=3, col=1)
+        # BB Width
+        if 'bb_width' in df.columns:
+            fig.add_trace(go.Scatter(x=x_data, y=df['bb_width'], name='BB Width', line=dict(color='purple')), row=2, col=1)
 
-    fig.update_layout(height=800, showlegend=True)
-    st.plotly_chart(fig, use_container_width=True)
+        # %B
+        if 'percent_b' in df.columns:
+            fig.add_trace(go.Scatter(x=x_data, y=df['percent_b'], name='%B', line=dict(color='orange')), row=3, col=1)
+            # Add reference lines at 0, 0.5, and 1
+            fig.add_hline(y=0, line_dash="dot", line_color="gray", row=3, col=1)
+            fig.add_hline(y=0.5, line_dash="dot", line_color="gray", row=3, col=1)
+            fig.add_hline(y=1, line_dash="dot", line_color="gray", row=3, col=1)
 
-st.dataframe(df)
+        fig.update_layout(height=800, showlegend=True)
+        st.plotly_chart(fig, use_container_width=True)
+
+    st.dataframe(df)
+
+if __name__ == '__main__':
+    streamlit_page()
