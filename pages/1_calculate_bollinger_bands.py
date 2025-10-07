@@ -6,7 +6,6 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-
 # Build the full path to data.csv
 data_path = Path(__file__).parent.parent
 data_path_str = os.path.join(str(data_path),"technical_indicators","testing_area")
@@ -36,13 +35,9 @@ def streamlit_page():
 
     df = load_data(matching_data_file)
 
-    # Only plot if required columns exist
-    required_columns = ['price', 'upper_band', 'middle_band', 'lower_band']
-    missing_columns = [col for col in required_columns if col not in df.columns]
+    if len(df) == 0:
+        st.write("No data found")
 
-    if missing_columns:
-        st.error(f"Missing required columns: {missing_columns}")
-        st.info("Please ensure your data.csv contains: price, upper_band, middle_band, lower_band")
     else:
         # Create subplots
         fig = make_subplots(
@@ -80,7 +75,8 @@ def streamlit_page():
         fig.update_layout(height=800, showlegend=True)
         st.plotly_chart(fig, use_container_width=True)
 
-    st.dataframe(df)
+    st.write("Most recent data")
+    st.dataframe(df.tail())
 
 if __name__ == '__main__':
     streamlit_page()
