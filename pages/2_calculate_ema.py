@@ -31,10 +31,9 @@ def load_data(matching_data_file):
     return df
 
 def streamlit_page():
-    st.title("Calculate EMA")
+    st.title("Bitcoin closing price and EMA")
 
     data = load_data(matching_data_file)
-    st.write(data.columns)
 
     fig = go.Figure()
 

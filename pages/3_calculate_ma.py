@@ -32,4 +32,48 @@ def load_data(matching_data_file):
     return df
 
 
-st.title("Calculate MA")
+def streamlit_page():
+    st.title("Bitcoin closing price and MA")
+
+    data = load_data(matching_data_file)
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=data['date_'],
+        y=data['price'],
+        mode='lines',
+        name='Price',
+        line=dict(color='blue', width=2)
+    ))
+    fig.add_trace(go.Scatter(
+        x=data['date_'],
+        y=data['sma_10'],
+        mode='lines',
+        name='MA 10',
+        line=dict(color='red', width=1, dash='dash')
+    ))
+    fig.add_trace(go.Scatter(
+        x=data['date_'],
+        y=data['sma_20'],
+        mode='lines',
+        name='MA 20',
+        line=dict(color='green', width=1, dash='dash')
+    ))
+    fig.add_trace(go.Scatter(
+        x=data['date_'],
+        y=data['sma_50'],
+        mode='lines',
+        name='MA 50',
+        line=dict(color='gray', width=1, dash='dash')
+    ))
+
+    st.plotly_chart(fig)
+
+    st.write("most recent data")
+
+    st.dataframe(data.head())
+
+if __name__ == "__main__":
+    streamlit_page()
+
