@@ -39,6 +39,10 @@ def streamlit_page():
         st.write("No data found")
 
     else:
+
+        period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=100, step=10)
+        df_filtered = df.tail(period)
+
         # Create subplots
         fig = make_subplots(
             rows=3, cols=1,
@@ -50,23 +54,23 @@ def streamlit_page():
 
         # Try using index if date is not a column
         if 'date' not in df.columns:
-            x_data = df.index
+            x_data = df_filtered.index
         else:
-            x_data = df['date']
+            x_data = df_filtered['date']
 
         # Bollinger Bands
-        fig.add_trace(go.Scatter(x=x_data, y=df['price'], name='Price', line=dict(color='blue')), row=1, col=1)
-        fig.add_trace(go.Scatter(x=x_data, y=df['upper_band'], name='Upper Band', line=dict(color='red', dash='dash')), row=1, col=1)
-        fig.add_trace(go.Scatter(x=x_data, y=df['middle_band'], name='Middle Band', line=dict(color='gray', dash='dash')), row=1, col=1)
-        fig.add_trace(go.Scatter(x=x_data, y=df['lower_band'], name='Lower Band', line=dict(color='green', dash='dash')), row=1, col=1)
+        fig.add_trace(go.Scatter(x=x_data, y=df_filtered['price'], name='Price', line=dict(color='blue')), row=1, col=1)
+        fig.add_trace(go.Scatter(x=x_data, y=df_filtered['upper_band'], name='Upper Band', line=dict(color='red', dash='dash')), row=1, col=1)
+        fig.add_trace(go.Scatter(x=x_data, y=df_filtered['middle_band'], name='Middle Band', line=dict(color='gray', dash='dash')), row=1, col=1)
+        fig.add_trace(go.Scatter(x=x_data, y=df_filtered['lower_band'], name='Lower Band', line=dict(color='green', dash='dash')), row=1, col=1)
 
         # BB Width
         if 'bb_width' in df.columns:
-            fig.add_trace(go.Scatter(x=x_data, y=df['bb_width'], name='BB Width', line=dict(color='purple')), row=2, col=1)
+            fig.add_trace(go.Scatter(x=x_data, y=df_filtered['bb_width'], name='BB Width', line=dict(color='purple')), row=2, col=1)
 
         # %B
         if 'percent_b' in df.columns:
-            fig.add_trace(go.Scatter(x=x_data, y=df['percent_b'], name='%B', line=dict(color='orange')), row=3, col=1)
+            fig.add_trace(go.Scatter(x=x_data, y=df_filtered['percent_b'], name='%B', line=dict(color='orange')), row=3, col=1)
             # Add reference lines at 0, 0.5, and 1
             fig.add_hline(y=0, line_dash="dot", line_color="gray", row=3, col=1)
             fig.add_hline(y=0.5, line_dash="dot", line_color="gray", row=3, col=1)
