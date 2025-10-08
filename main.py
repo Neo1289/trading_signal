@@ -4,8 +4,6 @@ from typing import Any
 import time
 import os
 
-from technical_indicators.fear_greed import fetch_fear_greed_index
-
 logging.basicConfig(
     filename='logfile.txt',  
     level=logging.INFO, 
