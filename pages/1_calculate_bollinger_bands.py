@@ -80,7 +80,7 @@ def streamlit_page():
         st.plotly_chart(fig, use_container_width=True)
 
     st.write("Most recent data")
-    st.dataframe(df.tail())
+    st.dataframe(df_filtered)
 
 if __name__ == '__main__':
     streamlit_page()

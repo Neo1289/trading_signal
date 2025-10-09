@@ -33,40 +33,45 @@ def load_data(matching_data_file):
 def streamlit_page():
     st.title("Bitcoin closing price and EMA")
 
-    data = load_data(matching_data_file)
+    df = load_data(matching_data_file)
+
+    period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=100, step=10)
+    df_filtered = df.tail(period)
 
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
-        x=data['timestamp'],
-        y=data['price'],
+        x=df_filtered['timestamp'],
+        y=df_filtered['price'],
         mode='lines',
         name='Price',
         line=dict(color='blue', width=2)
     ))
     fig.add_trace(go.Scatter(
-        x=data['timestamp'],
-        y=data['ema_20'],
+        x=df_filtered['timestamp'],
+        y=df_filtered['ema_20'],
         mode='lines',
         name='EMA 20',
         line=dict(color='red', width=1, dash='dash')
     ))
     fig.add_trace(go.Scatter(
-        x=data['timestamp'],
-        y=data['ema_50'],
+        x=df_filtered['timestamp'],
+        y=df_filtered['ema_50'],
         mode='lines',
         name='EMA 50',
         line=dict(color='green', width=1, dash='dash')
     ))
     fig.add_trace(go.Scatter(
-        x=data['timestamp'],
-        y=data['ema_200'],
+        x=df_filtered['timestamp'],
+        y=df_filtered['ema_200'],
         mode='lines',
         name='EMA 200',
         line=dict(color='gray', width=1, dash='dash')
     ))
 
     st.plotly_chart(fig)
+
+    st.dataframe(df_filtered)
 
 if __name__ == "__main__":
     streamlit_page()
