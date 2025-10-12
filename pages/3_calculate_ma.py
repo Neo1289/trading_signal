@@ -31,38 +31,40 @@ def load_data(matching_data_file):
     df = pd.read_csv(matching_data_file)
     return df
 
-
 def streamlit_page():
     st.title("Bitcoin closing price and MA")
 
-    data = load_data(matching_data_file)
+    df = load_data(matching_data_file)
+
+    period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=len(df), step=10)
+    df_filtered = df.tail(period)
 
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
-        x=data['date_'],
-        y=data['price'],
+        x=df_filtered['date_'],
+        y=df_filtered['price'],
         mode='lines',
         name='Price',
         line=dict(color='blue', width=2)
     ))
     fig.add_trace(go.Scatter(
-        x=data['date_'],
-        y=data['sma_10'],
+        x=df_filtered['date_'],
+        y=df_filtered['sma_10'],
         mode='lines',
         name='MA 10',
         line=dict(color='red', width=1, dash='dash')
     ))
     fig.add_trace(go.Scatter(
-        x=data['date_'],
-        y=data['sma_20'],
+        x=df_filtered['date_'],
+        y=df_filtered['sma_20'],
         mode='lines',
         name='MA 20',
         line=dict(color='green', width=1, dash='dash')
     ))
     fig.add_trace(go.Scatter(
-        x=data['date_'],
-        y=data['sma_50'],
+        x=df_filtered['date_'],
+        y=df_filtered['sma_50'],
         mode='lines',
         name='MA 50',
         line=dict(color='gray', width=1, dash='dash')
@@ -72,7 +74,7 @@ def streamlit_page():
 
     st.write("most recent data")
 
-    st.dataframe(data.head())
+    st.dataframe(df.head())
 
 if __name__ == "__main__":
     streamlit_page()
