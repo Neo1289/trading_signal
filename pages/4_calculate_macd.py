@@ -25,10 +25,50 @@ for dirpath, dirnames, filenames in walk(data_path_str):
     if matching_data_file:
         break
 
-@st.cache_data
+@st.cache_data(ttl=60)
 def load_data(matching_data_file):
     df = pd.read_csv(matching_data_file)
     return df
 
+def streamlit_page():
+    st.title("Bitcoin MACD")
 
-st.title("Calculate MACD")
+    df = load_data(matching_data_file)
+
+    period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=len(df), step=10)
+    df_filtered = df.tail(period)
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=df_filtered['timestamp'],
+        y=df_filtered['macd_line'],
+        mode='lines',
+        name='MACD Line',
+        line=dict(color='blue')
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=df_filtered['timestamp'],
+        y=df_filtered['signal_line'],
+        mode='lines',
+        name='Signal Line',
+        line=dict(color='orange')
+    ))
+
+    # Histogram
+    fig.add_trace(
+        go.Bar(x=df_filtered['timestamp'], y=df_filtered['histogram'],
+               name='Histogram', marker_color='gray'),
+    )
+
+    st.plotly_chart(fig)
+
+    st.write("most recent data")
+
+    st.dataframe(df.head())
+
+if __name__ == "__main__":
+    streamlit_page()
+
+
