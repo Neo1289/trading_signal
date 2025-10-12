@@ -72,6 +72,5 @@ def streamlit_page():
     st.plotly_chart(fig)
 
     st.dataframe(df_filtered)
-
 if __name__ == "__main__":
     streamlit_page()
