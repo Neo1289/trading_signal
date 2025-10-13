@@ -25,9 +25,15 @@ for dirpath, dirnames, filenames in walk(data_path_str):
     if matching_data_file:
         break
 
-@st.cache_data
+@st.cache_data(ttl=60)
 def load_data(matching_data_file):
     df = pd.read_csv(matching_data_file)
     return df
 
-st.title("Sp500 data")
+def streamlit_page():
+    st.title("Bitcoin fifty weeks MA")
+
+    st.dataframe(load_data(matching_data_file))
+
+if __name__ == "__main__":
+    streamlit_page()
