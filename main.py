@@ -28,7 +28,8 @@ from technical_indicators import (
     mvrv_score,
     others_dominance,
     total_three_divided_btc,
-    fear_greed
+    fear_greed,
+    sp_500
     )
 
 
@@ -83,7 +84,8 @@ def main() -> None:
         mvrv_score,
         others_dominance,
         total_three_divided_btc,
-        fear_greed
+        fear_greed,
+        sp_500
     ]
 
     total_bytes_processed = 0
