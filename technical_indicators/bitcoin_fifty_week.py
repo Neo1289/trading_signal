@@ -13,15 +13,7 @@ local_folder_string = str(local_folder.resolve())
 
 destination_table = "bitcoin_fifty_week"
 
-def current_week_func()-> tuple[int,int]:
-    now = datetime.now()
-    year, week, _ = now.isocalendar()
-
-    return year, week
-
-@functools.lru_cache(maxsize=1)
-def fetch_transactions(week_year:tuple[int,int]) -> pd.DataFrame:
-    print(f"Fetching fresh data for week {week_year}")
+def get_fifty_weeks() -> pd.DataFrame:
 
     btc = yf.download('BTC-USD', period='5y',auto_adjust=False)
 
@@ -48,8 +40,7 @@ def run_etl(credentials, dataset: str, mode: str) -> int:
 
     if mode == 'prod':
 
-        current_week = current_week_func()
-        table = fetch_transactions(current_week)
+        table = get_fifty_weeks()
         table_schema = schema()
         target_table = dataset + destination_table
 
@@ -66,10 +57,9 @@ def run_etl(credentials, dataset: str, mode: str) -> int:
 
     else:
         print('test mode')
-        current_week = current_week_func()
-        table = fetch_transactions(current_week)
+        table = get_fifty_weeks()
         # Create subdirectory if it doesn't exist
-        subdir = local_folder / fetch_transactions.__name__
+        subdir = local_folder / get_fifty_weeks.__name__
         subdir.mkdir(parents=True, exist_ok=True)
 
         csv_filename = os.path.join(str(subdir), "data.csv")

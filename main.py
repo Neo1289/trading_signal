@@ -29,7 +29,8 @@ from technical_indicators import (
     others_dominance,
     total_three_divided_btc,
     fear_greed,
-    sp_500
+    sp_500,
+    bitcoin_fifty_week
     )
 
 
@@ -85,7 +86,8 @@ def main() -> None:
         others_dominance,
         total_three_divided_btc,
         fear_greed,
-        sp_500
+        sp_500,
+        bitcoin_fifty_week
     ]
 
     total_bytes_processed = 0
