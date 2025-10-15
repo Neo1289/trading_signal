@@ -66,7 +66,7 @@ def streamlit_page():
 
     st.write("most recent data")
 
-    st.dataframe(df.head())
+    st.dataframe(df_filtered)
 
 if __name__ == "__main__":
     streamlit_page()

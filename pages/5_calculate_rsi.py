@@ -31,4 +31,30 @@ def load_data(matching_data_file):
     return df
 
 
-st.title("Calculate RSI")
+def streamlit_page():
+    st.title("Bitcoin RSI")
+
+    df = load_data(matching_data_file)
+
+    period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=len(df), step=10)
+    df_filtered = df.tail(period)
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=df_filtered['timestamp'],
+        y=df_filtered['rsi_14'],
+        mode='lines',
+        name='Signal Line',
+        line=dict(color='orange')
+    ))
+
+
+    st.plotly_chart(fig)
+
+    st.write("most recent data")
+
+    st.dataframe(df_filtered)
+
+if __name__ == "__main__":
+    streamlit_page()
