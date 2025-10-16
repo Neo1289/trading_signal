@@ -13,7 +13,7 @@ destination_table = "gspc"
 
 logger = logging.getLogger(__name__)
 
-def fetch_gspc(ticker:str = "^GSPC", period:str = "3y") -> pd.DataFrame:
+def fetch_gspc(ticker:str = "^GSPC", period:str = "1y") -> pd.DataFrame:
 
     # Download S&P 500 data
     ticker = yf.Ticker(ticker)  # ^GSPC is the S&P 500 index symbol
