@@ -18,5 +18,11 @@ def main_page():
     
     Use the sidebar navigation to explore different sections and start testing your indicators.""")
 
+    st.subheader("Available contents")
+
+    st.page_link("pages/3_calculate_ma.py", label="📊 Calculate Moving Averages")
+    st.page_link("pages/1_calculate_bollinger_bands.py", label="📊 Boliinger Bands")
+    st.write("...")
+
 if __name__ == "__main__":
     main_page()
