@@ -33,15 +33,22 @@ def load_data(matching_data_file):
 def streamlit_page():
     st.title("Calculate bollinger bands")
 
+    if st.button("🔄"):
+        st.session_state.clear()
+        st.rerun()
+
     df = load_data(matching_data_file)
+
+    if 'period_slider' not in st.session_state:
+        st.session_state['period_slider'] = 100
 
     if len(df) == 0:
         st.write("No data found")
 
     else:
-
-        period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=100, step=10)
+        period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=st.session_state['period_slider'], step=10, key='period slider')
         df_filtered = df.tail(period)
+
 
         # Create subplots
         fig = make_subplots(
