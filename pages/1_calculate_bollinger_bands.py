@@ -42,49 +42,55 @@ def streamlit_page():
     if 'period_slider' not in st.session_state:
         st.session_state['period_slider'] = 100
 
-    if len(df) == 0:
-        st.write("No data found")
+    st.write(st.session_state)
 
+    period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=st.session_state['period_slider'], step=10, key='period_slider')
+    df_filtered = df.tail(period)
+
+    # Create subplots
+    fig = make_subplots(
+        rows=3, cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.05,
+        subplot_titles=('Bollinger Bands', 'BB Width', '%B'),
+        row_heights=[0.5, 0.25, 0.25]
+    )
+
+    # Try using index if date is not a column
+    if 'date' not in df.columns:
+        x_data = df_filtered.index
     else:
-        period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=st.session_state['period_slider'], step=10, key='period slider')
-        df_filtered = df.tail(period)
+        x_data = df_filtered['date']
 
+    # Bollinger Bands
+    fig.add_trace(go.Scatter(x=x_data, y=df_filtered['price'], name='Price', line=dict(color='blue')), row=1, col=1)
+    fig.add_trace(
+        go.Scatter(x=x_data, y=df_filtered['upper_band'], name='Upper Band', line=dict(color='red', dash='dash')),
+        row=1, col=1)
+    fig.add_trace(
+        go.Scatter(x=x_data, y=df_filtered['middle_band'], name='Middle Band', line=dict(color='gray', dash='dash')),
+        row=1, col=1)
+    fig.add_trace(
+        go.Scatter(x=x_data, y=df_filtered['lower_band'], name='Lower Band', line=dict(color='green', dash='dash')),
+        row=1, col=1)
 
-        # Create subplots
-        fig = make_subplots(
-            rows=3, cols=1,
-            shared_xaxes=True,
-            vertical_spacing=0.05,
-            subplot_titles=('Bollinger Bands', 'BB Width', '%B'),
-            row_heights=[0.5, 0.25, 0.25]
-        )
+    # BB Width
+    if 'bb_width' in df.columns:
+        fig.add_trace(go.Scatter(x=x_data, y=df_filtered['bb_width'], name='BB Width', line=dict(color='purple')),
+                      row=2, col=1)
 
-        # Try using index if date is not a column
-        if 'date' not in df.columns:
-            x_data = df_filtered.index
-        else:
-            x_data = df_filtered['date']
+    # %B
+    if 'percent_b' in df.columns:
+        fig.add_trace(go.Scatter(x=x_data, y=df_filtered['percent_b'], name='%B', line=dict(color='orange')), row=3,
+                      col=1)
+        # Add reference lines at 0, 0.5, and 1
+        fig.add_hline(y=0, line_dash="dot", line_color="gray", row=3, col=1)
+        fig.add_hline(y=0.5, line_dash="dot", line_color="gray", row=3, col=1)
+        fig.add_hline(y=1, line_dash="dot", line_color="gray", row=3, col=1)
 
-        # Bollinger Bands
-        fig.add_trace(go.Scatter(x=x_data, y=df_filtered['price'], name='Price', line=dict(color='blue')), row=1, col=1)
-        fig.add_trace(go.Scatter(x=x_data, y=df_filtered['upper_band'], name='Upper Band', line=dict(color='red', dash='dash')), row=1, col=1)
-        fig.add_trace(go.Scatter(x=x_data, y=df_filtered['middle_band'], name='Middle Band', line=dict(color='gray', dash='dash')), row=1, col=1)
-        fig.add_trace(go.Scatter(x=x_data, y=df_filtered['lower_band'], name='Lower Band', line=dict(color='green', dash='dash')), row=1, col=1)
+    fig.update_layout(height=800, showlegend=True)
+    st.plotly_chart(fig, use_container_width=True)
 
-        # BB Width
-        if 'bb_width' in df.columns:
-            fig.add_trace(go.Scatter(x=x_data, y=df_filtered['bb_width'], name='BB Width', line=dict(color='purple')), row=2, col=1)
-
-        # %B
-        if 'percent_b' in df.columns:
-            fig.add_trace(go.Scatter(x=x_data, y=df_filtered['percent_b'], name='%B', line=dict(color='orange')), row=3, col=1)
-            # Add reference lines at 0, 0.5, and 1
-            fig.add_hline(y=0, line_dash="dot", line_color="gray", row=3, col=1)
-            fig.add_hline(y=0.5, line_dash="dot", line_color="gray", row=3, col=1)
-            fig.add_hline(y=1, line_dash="dot", line_color="gray", row=3, col=1)
-
-        fig.update_layout(height=800, showlegend=True)
-        st.plotly_chart(fig, use_container_width=True)
 
     st.write("Most recent data")
     st.dataframe(df_filtered)
