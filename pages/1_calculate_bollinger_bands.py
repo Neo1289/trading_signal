@@ -42,7 +42,6 @@ def streamlit_page():
     if 'period_slider' not in st.session_state:
         st.session_state['period_slider'] = 100
 
-    st.write(st.session_state)
 
     period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=st.session_state['period_slider'], step=10, key='period_slider')
     df_filtered = df.tail(period)

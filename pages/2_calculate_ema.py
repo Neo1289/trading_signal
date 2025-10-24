@@ -33,9 +33,16 @@ def load_data(matching_data_file):
 def streamlit_page():
     st.title("Bitcoin closing price and EMA")
 
+    if st.button("🔄"):
+        st.session_state.clear()
+        st.rerun()
+
     df = load_data(matching_data_file)
 
-    period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=100, step=10)
+    if 'period_slider' not in st.session_state:
+        st.session_state['period_slider'] = 100
+
+    period = st.slider("Select Period (days)", min_value=10, max_value=len(df), value=100, step=10, key="period_slider")
     df_filtered = df.tail(period)
 
     fig = go.Figure()
