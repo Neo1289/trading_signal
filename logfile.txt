@@ -1925,3 +1925,63 @@ google.api_core.exceptions.BadRequest: 400 Too many partitions produced by query
 2025-11-08 09:09:43,607 - __main__ - INFO - Query processed 78,072 bytes (0.07 MB)
 2025-11-08 09:09:43,607 - __main__ - INFO - Fetched 180 rows of combined indicator data
 2025-11-08 09:09:43,608 - __main__ - INFO - Technical analysis report generated and saved to 'report analysis.txt'
+2025-11-09 09:07:44,107 - __main__ - INFO - Starting ETL job: Technical_Indicators.Bitcoin_Transactions_Volume
+2025-11-09 09:07:46,441 - technical_indicators.bitcoin_transactions_volume - INFO - Query processed 355,536 bytes (0.34 MB)
+2025-11-09 09:07:50,708 - pandas_gbq.gbq_connector - INFO - 101 out of 101 rows loaded.
+2025-11-09 09:07:50,708 - __main__ - INFO - Completed Technical_Indicators.Bitcoin_Transactions_Volume in 6.60 seconds
+2025-11-09 09:07:50,708 - __main__ - INFO - Starting ETL job: Technical_Indicators.Bitcoin_Closing_Prices
+2025-11-09 09:07:50,911 - technical_indicators.bitcoin_closing_prices - INFO - imported 365 rows of data from https://api.coingecko.com/api/v3/coins/bitcoin/market_chart
+2025-11-09 09:07:55,112 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-11-09 09:07:55,113 - __main__ - INFO - Completed Technical_Indicators.Bitcoin_Closing_Prices in 4.40 seconds
+2025-11-09 09:07:55,113 - __main__ - INFO - Starting ETL job: Technical_Indicators.Btc_Moving_Averages
+2025-11-09 09:07:57,747 - technical_indicators.btc_moving_averages - INFO - Query processed 5,840 bytes (0.01 MB)
+2025-11-09 09:08:01,730 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-11-09 09:08:01,730 - __main__ - INFO - Completed Technical_Indicators.Btc_Moving_Averages in 6.62 seconds
+2025-11-09 09:08:01,730 - __main__ - INFO - Starting ETL job: Technical_Indicators.Bitcoin_Ema
+2025-11-09 09:08:04,002 - technical_indicators.bitcoin_ema - INFO - Query processed 5,840 bytes (0.01 MB)
+2025-11-09 09:08:08,073 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-11-09 09:08:08,073 - __main__ - INFO - Completed Technical_Indicators.Bitcoin_Ema in 6.34 seconds
+2025-11-09 09:08:08,073 - __main__ - INFO - Starting ETL job: Technical_Indicators.Macd
+2025-11-09 09:08:10,462 - technical_indicators.macd - INFO - Query processed 11,680 bytes (0.01 MB)
+2025-11-09 09:08:14,682 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-11-09 09:08:14,682 - __main__ - INFO - Completed Technical_Indicators.Macd in 6.61 seconds
+2025-11-09 09:08:14,682 - __main__ - INFO - Starting ETL job: Technical_Indicators.Rsi
+2025-11-09 09:08:16,902 - technical_indicators.rsi - INFO - Query processed 5,840 bytes (0.01 MB)
+2025-11-09 09:08:20,683 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-11-09 09:08:20,683 - __main__ - INFO - Completed Technical_Indicators.Rsi in 6.00 seconds
+2025-11-09 09:08:20,683 - __main__ - INFO - Starting ETL job: Technical_Indicators.Bollinger_Bands
+2025-11-09 09:08:22,952 - technical_indicators.bollinger_bands - INFO - Query processed 5,840 bytes (0.01 MB)
+2025-11-09 09:08:26,256 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-11-09 09:08:26,256 - __main__ - INFO - Completed Technical_Indicators.Bollinger_Bands in 5.57 seconds
+2025-11-09 09:08:26,256 - __main__ - INFO - Starting ETL job: Technical_Indicators.Ethereum_Closing_Prices
+2025-11-09 09:08:26,397 - technical_indicators.ethereum_closing_prices - INFO - imported 365 rows of data from https://api.coingecko.com/api/v3/coins/ethereum/market_chart
+2025-11-09 09:08:33,692 - __main__ - INFO - Completed Technical_Indicators.Ethereum_Closing_Prices in 7.44 seconds
+2025-11-09 09:08:33,692 - __main__ - INFO - Starting ETL job: Technical_Indicators.Tether_Data
+2025-11-09 09:08:33,836 - technical_indicators.tether_data - INFO - imported 365 rows of data from https://api.coingecko.com/api/v3/coins/tether/market_chart
+2025-11-09 09:08:42,106 - __main__ - INFO - Completed Technical_Indicators.Tether_Data in 8.41 seconds
+2025-11-09 09:08:42,106 - __main__ - INFO - Starting ETL job: Technical_Indicators.Cmc_Data
+2025-11-09 09:08:45,334 - __main__ - INFO - Completed Technical_Indicators.Cmc_Data in 3.23 seconds
+2025-11-09 09:08:45,334 - __main__ - INFO - Starting ETL job: Technical_Indicators.Mvrv_Score
+2025-11-09 09:08:45,727 - technical_indicators.mvrv_score - INFO - imported 100 rows of data from https://community-api.coinmetrics.io/v4/timeseries/asset-metrics
+2025-11-09 09:08:49,581 - __main__ - INFO - Completed Technical_Indicators.Mvrv_Score in 4.25 seconds
+2025-11-09 09:08:49,581 - __main__ - INFO - Starting ETL job: Technical_Indicators.Others_Dominance
+2025-11-09 09:08:52,556 - technical_indicators.others_dominance - INFO - Query processed 1,536 bytes (0.00 MB)
+2025-11-09 09:08:56,437 - pandas_gbq.gbq_connector - INFO - 64 out of 64 rows loaded.
+2025-11-09 09:08:56,437 - __main__ - INFO - Completed Technical_Indicators.Others_Dominance in 6.86 seconds
+2025-11-09 09:08:56,437 - __main__ - INFO - Starting ETL job: Technical_Indicators.Total_Three_Divided_Btc
+2025-11-09 09:08:58,753 - technical_indicators.total_three_divided_btc - INFO - Query processed 7,824 bytes (0.01 MB)
+2025-11-09 09:09:01,898 - pandas_gbq.gbq_connector - INFO - 64 out of 64 rows loaded.
+2025-11-09 09:09:01,898 - __main__ - INFO - Completed Technical_Indicators.Total_Three_Divided_Btc in 5.46 seconds
+2025-11-09 09:09:01,898 - __main__ - INFO - Starting ETL job: Technical_Indicators.Fear_Greed
+2025-11-09 09:09:06,824 - pandas_gbq.gbq_connector - INFO - 365 out of 365 rows loaded.
+2025-11-09 09:09:06,824 - __main__ - INFO - Completed Technical_Indicators.Fear_Greed in 4.93 seconds
+2025-11-09 09:09:06,824 - __main__ - INFO - Starting ETL job: Technical_Indicators.Sp_500
+2025-11-09 09:09:12,987 - __main__ - INFO - Completed Technical_Indicators.Sp_500 in 6.16 seconds
+2025-11-09 09:09:12,988 - __main__ - INFO - Starting ETL job: Technical_Indicators.Bitcoin_Fifty_Week
+2025-11-09 09:09:17,250 - pandas_gbq.gbq_connector - INFO - 261 out of 261 rows loaded.
+2025-11-09 09:09:17,250 - __main__ - INFO - Completed Technical_Indicators.Bitcoin_Fifty_Week in 4.26 seconds
+2025-11-09 09:09:17,250 - __main__ - INFO - Total bytes processed across all jobs: 0.38 MB)
+2025-11-09 09:09:17,250 - __main__ - INFO - Total execution time: 93.14 seconds (1.55 minutes)
+2025-11-09 09:09:20,608 - __main__ - INFO - Query processed 78,072 bytes (0.07 MB)
+2025-11-09 09:09:20,608 - __main__ - INFO - Fetched 180 rows of combined indicator data
+2025-11-09 09:09:20,609 - __main__ - INFO - Technical analysis report generated and saved to 'report analysis.txt'
